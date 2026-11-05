@@ -1,0 +1,46 @@
+item_name,精密配比机
+item_description,消耗原料瓶中的混合液，把待处理瓶的指定成分调至目标百分比。每次耗电2；比例步进0.1%。
+item_flavor,让每一滴都恰到好处。
+previous_component,上一成分
+next_component,下一成分
+enter_percent,填写比例 (%)
+decrease_percent,-0.1%
+increase_percent,+0.1%
+refresh_preview,刷新预览
+start_mix,开始配比
+panel_target,待处理瓶
+panel_source,掺杂原料瓶
+panel_control,精密配比
+initial_status,放入两瓶液体，选择成分和比例。
+input_title,填写目标比例 (%)
+input_hint,单位：%　范围：0–100　精度：0.1%
+input_placeholder,例如：30 或 12.5
+input_invalid,请输入0到100之间的数字，例如30或12.5。
+input_precision,当前精度为0.1%，请最多输入一位小数。
+apply,应用
+cancel,取消
+percent_set,目标比例已设置为{0}%。
+bottle_missing,{0}：未放入
+bottle_info,{0}：{1}mL，{2}%
+target_label,待处理
+source_label,原料
+component_label,目标成分：{0}
+percent_label,目标比例：{0}%
+preview_noop,已达到目标，无需处理。
+preview_transfer,加入 {0}mL → {1}%
+missing_bottles,请放入待处理瓶和原料瓶。
+unsupported_bottle,仅支持自有普通液体瓶，不支持滤水容器和酒类容器。
+precision_limit,微升精度下无法达到目标，请增大配液量。
+operation_failed,无法配比，请查看预览中的具体原因。
+buy_first,请先购买机器。
+noop_status,已达到目标，未消耗原料或电量。
+low_power,电量不足，需要2点电量。
+mix_complete,完成：加入{0}mL，当前{1}%。
+empty_target,待处理瓶为空，请先加入一些基液。
+empty_source,原料瓶为空或未放入。
+unreachable,此原料无法达到目标，请更换浓度合适的原料。
+insufficient_source,原料量不足，请补充原料或减少待处理液。
+insufficient_capacity,待处理瓶空间不足，请先转移一部分液体。
+invalid_bottle,瓶内成分或容量数据无效。
+spawn_machine,生成精密配比机
+loaded_message,精密配比机已加载，可在杰克逊博士处购买。

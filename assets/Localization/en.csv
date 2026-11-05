@@ -1,0 +1,46 @@
+item_name,Precision Mixer
+item_description,"Consumes fluid from a source bottle to bring the selected component in the target bottle to a specified percentage. Uses 2 power per mix; percentage step: 0.1%."
+item_flavor,Every drop in its proper place.
+previous_component,Previous
+next_component,Next
+enter_percent,Enter percentage (%)
+decrease_percent,-0.1%
+increase_percent,+0.1%
+refresh_preview,Refresh
+start_mix,Mix
+panel_target,Target bottle
+panel_source,Source bottle
+panel_control,Precision mixing
+initial_status,Insert two bottles and choose a component and percentage.
+input_title,Target percentage (%)
+input_hint,Unit: % | Range: 0–100 | Step: 0.1%
+input_placeholder,For example: 30 or 12.5
+input_invalid,Enter a number from 0 to 100 (e.g. 30 or 12.5).
+input_precision,Use at most one decimal place (0.1% steps).
+apply,Apply
+cancel,Cancel
+percent_set,Target percentage set to {0}%.
+bottle_missing,{0}: not inserted
+bottle_info,"{0}: {1} mL, {2}%"
+target_label,Target
+source_label,Source
+component_label,Component: {0}
+percent_label,Target: {0}%
+preview_noop,Already at the target percentage.
+preview_transfer,Add {0} mL → {1}%
+missing_bottles,Insert a target bottle and a source bottle.
+unsupported_bottle,Use owned ordinary bottles; filter and wine containers are unsupported.
+precision_limit,Microliter precision cannot reach this target. Use more fluid.
+operation_failed,Cannot mix. See the preview for details.
+buy_first,Purchase this machine first.
+noop_status,Already at target. No fluid or power consumed.
+low_power,Not enough power. Requires 2 power.
+mix_complete,"Done: added {0} mL; current percentage: {1}%."
+empty_target,Target bottle is empty. Add some base fluid first.
+empty_source,Source bottle is empty or missing.
+unreachable,This source cannot reach the target. Use a suitable concentration.
+insufficient_source,Not enough source fluid. Refill or reduce the target volume.
+insufficient_capacity,Not enough target space. Transfer some fluid out first.
+invalid_bottle,Invalid bottle contents or capacity.
+spawn_machine,Spawn Precision Mixer
+loaded_message,Precision Mixer loaded. Available from Dr. Jackson.

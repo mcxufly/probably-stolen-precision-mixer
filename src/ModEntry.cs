@@ -14,16 +14,31 @@ namespace ProbablyStolenMixer
         {
             ModHook.OnModItemDirectoryInit += Register;
             ModHook.OnPlaceInventorInventoryItemLate += Stock;
-            ModHelper.AddDebugFunction(Id, ModHelper.DEBUG_CATEGORY_SPAWN, "生成精密配比机", () =>
-                ModHelper.MoveItemToInventory(ModHelper.SpawnItem(ItemId)));
-            log.Log("精密配比机已加载，可在杰克逊博士处购买。");
+            ModHook.OnModAssetsLoaded += AssetsLoaded;
+            ModHook.OnGameLoadedNormal += RegisterDebugButton;
         }
 
         public void OnDisable()
         {
             ModHook.OnModItemDirectoryInit -= Register;
             ModHook.OnPlaceInventorInventoryItemLate -= Stock;
+            ModHook.OnModAssetsLoaded -= AssetsLoaded;
+            ModHook.OnGameLoadedNormal -= RegisterDebugButton;
             ModHelper.RemoveDebugFunctions(Id);
+        }
+
+        private void AssetsLoaded(LoadedMod mod)
+        {
+            if (mod.Manifest.ID != Id) return;
+            RegisterDebugButton();
+            log.Log(L10n.Text("loaded_message"));
+        }
+
+        private static void RegisterDebugButton()
+        {
+            ModHelper.RemoveDebugFunctions(Id);
+            ModHelper.AddDebugFunction(Id, ModHelper.DEBUG_CATEGORY_SPAWN, L10n.Text("spawn_machine"), () =>
+                ModHelper.MoveItemToInventory(ModHelper.SpawnItem(ItemId)));
         }
 
         private static void Register(ModItemDirectory directory) => directory.Add(ItemId, MixerMachine.Create);

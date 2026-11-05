@@ -17,9 +17,43 @@ namespace ProbablyStolenMixer
         private readonly MachineryText targetInfo = new MachineryText();
         private readonly MachineryText sourceInfo = new MachineryText();
         private readonly MachineryText preview = new MachineryText();
-        private readonly MachineryText status = new MachineryText("放入两瓶液体，选择成分和比例。");
+        private readonly MachineryText status = new MachineryText(L10n.Text("initial_status"));
         private readonly MachinerySlider slider = new MachinerySlider(30f, 180).SetRange(0f, 100f, 0.1f);
         private GameItem machine;
+        private readonly List<Action> refreshLabels = new List<Action>();
+        private string statusKey = "initial_status";
+        private object[] statusArgs = Array.Empty<object>();
+
+        private MachineryButton Button(string key, Action action)
+        {
+            var button = new MachineryButton(L10n.Text(key), action);
+            string previous = L10n.Text(key);
+            refreshLabels.Add(() =>
+            {
+                string current = L10n.Text(key);
+                if (current != previous) { button.SetText(current); previous = current; }
+            });
+            return button;
+        }
+
+        private MachineryPanel Panel(string key, PixelElement content, string role)
+        {
+            var panel = MachineHelper.Panel(L10n.Text(key), content, role);
+            string previous = L10n.Text(key);
+            refreshLabels.Add(() =>
+            {
+                string current = L10n.Text(key);
+                if (current != previous) { panel.SetLabel(current); previous = current; }
+            });
+            return panel;
+        }
+
+        private void Status(string key, params object[] args)
+        {
+            statusKey = key;
+            statusArgs = args;
+            Text(status, L10n.Text(key, args));
+        }
 
         public static GameItem Create() => new MixerMachine().Build();
 
@@ -29,19 +63,19 @@ namespace ProbablyStolenMixer
             source.mayInventoryAddItemFunc = (item, _) => AcceptBottle(item);
             var controls = MachineryStack.Vertical(
                 substance,
-                MachineryStack.Horizontal(new MachineryButton("上一成分", () => SelectLiquid(-1)), new MachineryButton("下一成分", () => SelectLiquid(1))),
-                percentage, new MachineryButton("填写比例 (%)", OpenPercentInput), slider,
-                MachineryStack.Horizontal(new MachineryButton("-0.1%", () => ChangePercent(-1)), new MachineryButton("+0.1%", () => ChangePercent(1))),
+                MachineryStack.Horizontal(Button("previous_component", () => SelectLiquid(-1)), Button("next_component", () => SelectLiquid(1))),
+                percentage, Button("enter_percent", OpenPercentInput), slider,
+                MachineryStack.Horizontal(Button("decrease_percent", () => ChangePercent(-1)), Button("increase_percent", () => ChangePercent(1))),
                 targetInfo, sourceInfo, preview,
-                MachineryStack.Horizontal(new MachineryButton("刷新预览", Refresh), new MachineryButton("开始配比", Mix)), status);
+                MachineryStack.Horizontal(Button("refresh_preview", Refresh), Button("start_mix", Mix)), status);
             var window = MachineHelper.CreateMachineryWindow(true,
-                MachineHelper.PowerPanel(battery), MachineHelper.Panel("待处理瓶", target, "target"),
-                MachineHelper.Panel("掺杂原料瓶", source, "source"), MachineHelper.Panel("精密配比", controls, "control"));
+                MachineHelper.PowerPanel(battery), Panel("panel_target", target, "target"),
+                Panel("panel_source", source, "source"), Panel("panel_control", controls, "control"));
             machine = ItemDirectory.CreateEmptyItem().SetContentWindow(window)
                 .SetSpriteAndShapeFromMod(ModEntry.Id, "precision_mixer");
-            machine.name = "精密配比机";
-            machine.shortDescription = "消耗原料瓶中的混合液，把待处理瓶的指定成分调至目标百分比。每次耗电2；比例步进0.1%。";
-            machine.flavorText = "让每一滴都恰到好处。";
+            machine.name = L10n.Text("item_name");
+            machine.shortDescription = L10n.Text("item_description");
+            machine.flavorText = L10n.Text("item_flavor");
             machine.unitValue = 650;
             machine.SetGameItemType(TypeHelper.MACHINE);
             machine.EnableTag(ContainerHelper.CONTAINER_TAG);
@@ -85,27 +119,27 @@ namespace ProbablyStolenMixer
                     CultureInfo.InvariantCulture, out double parsed) || double.IsNaN(parsed) || double.IsInfinity(parsed)
                     || parsed < 0 || parsed > 100)
                 {
-                    dialog?.Get("error")?.SetText("请输入0到100之间的数字，例如30或12.5。");
+                    dialog?.Get("error")?.SetText(L10n.Text("input_invalid"));
                     return;
                 }
                 double tenths = Math.Round(parsed * 10, MidpointRounding.AwayFromZero);
                 if (Math.Abs(parsed * 10 - tenths) > 0.000001)
                 {
-                    dialog?.Get("error")?.SetText("当前精度为0.1%，请最多输入一位小数。");
+                    dialog?.Get("error")?.SetText(L10n.Text("input_precision"));
                     return;
                 }
                 SetPercent((int)tenths);
                 slider.SetValue(Percent / 10f);
-                Text(status, "目标比例已设置为" + Number(Percent / 10.0, "0.0") + "%。");
+                Status("percent_set", Number(Percent / 10.0, "0.0"));
                 dialog?.Close();
             }
-            dialog = CustomUIManager.Window(ModEntry.Id + ".percent", "填写目标比例 (%)", CustomUIManager.LAYER_PAPER)
+            dialog = CustomUIManager.Window(ModEntry.Id + ".percent", L10n.Text("input_title"), CustomUIManager.LAYER_PAPER)
                 .UseMachineryStyle().SetSize(400, 230)
-                .AddLabel("单位：%　范围：0–100　精度：0.1%")
-                .AddInput("例如：30 或 12.5", value, id: "percent", onTyping: text => value = text)
+                .AddLabel(L10n.Text("input_hint"))
+                .AddInput(L10n.Text("input_placeholder"), value, id: "percent", onTyping: text => value = text)
                 .AddLabel("", "error")
-                .AddButton("应用", Apply)
-                .AddButton("取消", () => dialog?.Close())
+                .AddButton(L10n.Text("apply"), Apply)
+                .AddButton(L10n.Text("cancel"), () => dialog?.Close())
                 .Show();
         }
 
@@ -134,34 +168,39 @@ namespace ProbablyStolenMixer
 
         private static string BottleInfo(string label, GameItem bottle, Liquid liquid)
         {
-            if (bottle == null) return label + "：未放入";
+            if (bottle == null) return L10n.Text("bottle_missing", label);
             int total = WaterHelper.GetTotalVolume(bottle);
             double fraction = total > 0 ? Amount(bottle, liquid) * 100.0 / total : 0;
-            return label + "：" + Number(total / 1000.0) + "mL，" + Number(fraction, "0.000") + "%";
+            return L10n.Text("bottle_info", label, Number(total / 1000.0), Number(fraction, "0.000"));
         }
 
         private void Refresh()
         {
             int index = SelectedIndex;
             if (index < 0 || machine == null) return;
+            foreach (var update in refreshLabels) update();
+            machine.name = L10n.Text("item_name");
+            machine.shortDescription = L10n.Text("item_description");
+            machine.flavorText = L10n.Text("item_flavor");
+            Text(status, L10n.Text(statusKey, statusArgs));
             Liquid liquid = Liquid.Liquids[index];
-            Text(substance, "目标成分：" + liquid.displayName);
-            Text(percentage, "目标比例：" + Number(Percent / 10.0, "0.0") + "%");
-            Text(targetInfo, BottleInfo("待处理", target.childItem, liquid));
-            Text(sourceInfo, BottleInfo("原料", source.childItem, liquid));
+            Text(substance, L10n.Text("component_label", L10n.LiquidName(liquid)));
+            Text(percentage, L10n.Text("percent_label", Number(Percent / 10.0, "0.0")));
+            Text(targetInfo, BottleInfo(L10n.Text("target_label"), target.childItem, liquid));
+            Text(sourceInfo, BottleInfo(L10n.Text("source_label"), source.childItem, liquid));
             if (TryPlan(out int amount, out double fraction, out string reason))
-                Text(preview, amount == 0 ? "已达到目标，无需处理。" : "加入 " + Number(amount / 1000.0) + "mL → " + Number(fraction * 100, "0.000") + "%");
+                Text(preview, amount == 0 ? L10n.Text("preview_noop") : L10n.Text("preview_transfer", Number(amount / 1000.0), Number(fraction * 100, "0.000")));
             else Text(preview, reason);
         }
 
         private bool TryPlan(out int amount, out double fraction, out string reason)
         {
-            amount = 0; fraction = 0; reason = "请放入待处理瓶和原料瓶。";
+            amount = 0; fraction = 0; reason = L10n.Text("missing_bottles");
             GameItem t = target.childItem, s = source.childItem;
             int index = SelectedIndex;
             if (t == null || index < 0) return false;
             if (!AcceptBottle(t) || (s != null && (!AcceptBottle(s) || ReferenceEquals(t, s))))
-            { reason = "仅支持自有普通液体瓶，不支持滤水容器和酒类容器。"; return false; }
+            { reason = L10n.Text("unsupported_bottle"); return false; }
             int total = WaterHelper.GetTotalVolume(t);
             int sourceTotal = s == null ? 0 : WaterHelper.GetTotalVolume(s);
             var plan = MixPlanner.Plan(total, Amount(t, Liquid.Liquids[index]), WaterHelper.GetTotalCapacity(t),
@@ -192,18 +231,18 @@ namespace ProbablyStolenMixer
                 double error = Math.Abs(projected - Percent / 1000.0);
                 if (error < best) { best = error; bestAmount = (int)candidate; fraction = projected; }
             }
-            if (best > 0.00005) { reason = "微升精度下无法达到目标，请增大配液量。"; return false; }
+            if (best > 0.00005) { reason = L10n.Text("precision_limit"); return false; }
             amount = bestAmount;
             return true;
         }
 
         private void Mix()
         {
-            if (!GeneralHelper.IsItemOwned(machine)) { Text(status, "请先购买机器。"); return; }
-            if (!TryPlan(out int amount, out _, out string reason)) { Text(status, reason); return; }
-            if (amount == 0) { Text(status, "已达到目标，未消耗原料或电量。"); return; }
+            if (!GeneralHelper.IsItemOwned(machine)) { Status("buy_first"); return; }
+            if (!TryPlan(out int amount, out _, out string reason)) { Status("operation_failed"); return; }
+            if (amount == 0) { Status("noop_status"); return; }
             if (battery.childItem == null || !PowerHelper.CanDrawPowerSource(battery.childItem, EnergyPerMix))
-            { Text(status, "电量不足，需要2点电量。"); return; }
+            { Status("low_power"); return; }
             GameItem t = target.childItem, s = source.childItem;
             int[] beforeTarget = WaterHelper.GetLiquidParts(t);
             int[] beforeSource = WaterHelper.GetLiquidParts(s);
@@ -229,20 +268,20 @@ namespace ProbablyStolenMixer
             Refresh();
             int total = WaterHelper.GetTotalVolume(t);
             double actual = Amount(t, Liquid.Liquids[SelectedIndex]) * 100.0 / total;
-            Text(status, "完成：加入" + Number(amount / 1000.0) + "mL，当前" + Number(actual, "0.000") + "%。");
+            Status("mix_complete", Number(amount / 1000.0), Number(actual, "0.000"));
         }
 
         private static string FailureText(MixFailure failure)
         {
             switch (failure)
             {
-                case MixFailure.EmptyTarget: return "待处理瓶为空，请先加入一些基液。";
-                case MixFailure.EmptySource: return "原料瓶为空或未放入。";
-                case MixFailure.Unreachable: return "此原料无法达到目标，请更换浓度合适的原料。";
-                case MixFailure.InsufficientSource: return "原料量不足，请补充原料或减少待处理液。";
-                case MixFailure.InsufficientCapacity: return "待处理瓶空间不足，请先转移一部分液体。";
-                case MixFailure.PrecisionLimit: return "微升精度下无法达到目标，请增大配液量。";
-                default: return "瓶内成分或容量数据无效。";
+                case MixFailure.EmptyTarget: return L10n.Text("empty_target");
+                case MixFailure.EmptySource: return L10n.Text("empty_source");
+                case MixFailure.Unreachable: return L10n.Text("unreachable");
+                case MixFailure.InsufficientSource: return L10n.Text("insufficient_source");
+                case MixFailure.InsufficientCapacity: return L10n.Text("insufficient_capacity");
+                case MixFailure.PrecisionLimit: return L10n.Text("precision_limit");
+                default: return L10n.Text("invalid_bottle");
             }
         }
     }
