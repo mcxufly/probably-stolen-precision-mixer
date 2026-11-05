@@ -1,5 +1,5 @@
 item_name,精密配比机
-item_description,消耗原料瓶中的混合液，把待处理瓶的指定成分调至目标百分比。每次耗电2；比例步进0.1%。
+item_description,消耗原料瓶中的混合液，把待处理瓶的指定成分调至目标百分比。无需电池或供电；比例步进0.1%。
 item_flavor,让每一滴都恰到好处。
 enter_percent,填写比例 (%)
 decrease_percent,-0.1%
@@ -31,8 +31,7 @@ unsupported_bottle,仅支持自有普通液体瓶，不支持滤水容器和酒�
 precision_limit,微升精度下无法达到目标，请增大配液量。
 operation_failed,无法配比，请查看预览中的具体原因。
 buy_first,请先购买机器。
-noop_status,已达到目标，未消耗原料或电量。
-low_power,电量不足，需要2点电量。
+noop_status,已达到目标，未消耗原料。
 mix_complete,完成：加入{0}mL，当前{1}%。
 empty_target,待处理瓶为空，请先加入一些基液。
 empty_source,原料瓶为空或未放入。

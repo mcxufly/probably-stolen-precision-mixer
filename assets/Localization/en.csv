@@ -1,5 +1,5 @@
 item_name,Precision Mixer
-item_description,"Consumes fluid from a source bottle to bring the selected component in the target bottle to a specified percentage. Uses 2 power per mix; percentage step: 0.1%."
+item_description,"Consumes fluid from a source bottle to bring the selected component in the target bottle to a specified percentage. No battery or power required; percentage step: 0.1%."
 item_flavor,Every drop in its proper place.
 enter_percent,Enter percentage (%)
 decrease_percent,-0.1%
@@ -31,8 +31,7 @@ unsupported_bottle,Use owned ordinary bottles; filter and wine containers are un
 precision_limit,Microliter precision cannot reach this target. Use more fluid.
 operation_failed,Cannot mix. See the preview for details.
 buy_first,Purchase this machine first.
-noop_status,Already at target. No fluid or power consumed.
-low_power,Not enough power. Requires 2 power.
+noop_status,Already at target. No fluid consumed.
 mix_complete,"Done: added {0} mL; current percentage: {1}%."
 empty_target,Target bottle is empty. Add some base fluid first.
 empty_source,Source bottle is empty or missing.

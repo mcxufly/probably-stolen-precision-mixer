@@ -64,6 +64,16 @@ class Program
         if (Matches("VERSION 100-Rev6")) throw new Exception("Display-version regression check failed");
         if (!manifest.GameVersions.Any(Matches)) throw new Exception("Manifest does not match Application.version " + args[0]);
         Console.WriteLine("Compatibility passed using game NormalizeVersion: " + string.Join(",", manifest.GameVersions) + " matches " + args[0]);
+        using (var mod = DseCecil.AssemblyDefinition.ReadAssembly(Path.Combine(folder, "ProbablyStolenMixer.dll")))
+        {
+            var machine = mod.MainModule.Types.Single(t => t.Name == "MixerMachine");
+            if (machine.Fields.Count(f => f.FieldType.Name == "GameSlotInventory") != 2)
+                throw new Exception("Mixer must have exactly two bottle slots and no battery slot");
+            var references = mod.MainModule.GetMemberReferences().OfType<DseCecil.MethodReference>();
+            if (references.Any(m => m.DeclaringType.Name == "PowerHelper" || m.Name == "SetupBatterySlot" || m.Name == "PowerPanel"))
+                throw new Exception("Battery or power dependency remains in the mod");
+            Console.WriteLine("Battery-free checks passed: two bottle slots; no power checks, power draw or battery setup.");
+        }
         var scan = ModScanner.Scan(new[] { Path.Combine(folder, "ProbablyStolenMixer.dll") }, allowed, folder, false);
         Console.WriteLine("Scanner: " + scan.MethodsScanned + " methods; capabilities=" + string.Join(",", scan.Capabilities));
         Console.WriteLine(scan.FormatFindings(100));

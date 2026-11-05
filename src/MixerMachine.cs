@@ -8,8 +8,6 @@ namespace ProbablyStolenMixer
     {
         private const string PercentTag = "XUFLY_MIX_PERCENT_TENTHS";
         private const string LiquidTag = "XUFLY_MIX_LIQUID";
-        private const int EnergyPerMix = 2;
-        private readonly GameSlotInventory battery = new GameSlotInventory();
         private readonly GameSlotInventory target = new GameSlotInventory(2, 3);
         private readonly GameSlotInventory source = new GameSlotInventory(2, 3);
         private readonly MachineryText substance = new MachineryText();
@@ -71,7 +69,7 @@ namespace ProbablyStolenMixer
                 targetInfo, sourceInfo, preview,
                 MachineryStack.Horizontal(Button("refresh_preview", Refresh), Button("start_mix", Mix)), status);
             var window = MachineHelper.CreateMachineryWindow(true,
-                MachineHelper.PowerPanel(battery), Panel("panel_target", target, "target"),
+                Panel("panel_target", target, "target"),
                 Panel("panel_source", source, "source"), Panel("panel_control", controls, "control"));
             machine = ItemDirectory.CreateEmptyItem().SetContentWindow(window)
                 .SetSpriteAndShapeFromMod(ModEntry.Id, "precision_mixer");
@@ -81,7 +79,6 @@ namespace ProbablyStolenMixer
             machine.unitValue = 650;
             machine.SetGameItemType(TypeHelper.MACHINE);
             machine.EnableTag(ContainerHelper.CONTAINER_TAG);
-            MachineHelper.SetupBatterySlot(battery, machine);
             machine.ModifyTag(PercentTag, s => s.Enable().SetInt(300));
             machine.ModifyTag(LiquidTag, s => s.Enable().SetString(Liquid.LIQUID_WATER));
             slider.onChanged += value => SetPercent((int)Math.Round(value * 10));
@@ -254,8 +251,6 @@ namespace ProbablyStolenMixer
             if (!GeneralHelper.IsItemOwned(machine)) { Status("buy_first"); return; }
             if (!TryPlan(out int amount, out _, out string reason)) { Status("operation_failed"); return; }
             if (amount == 0) { Status("noop_status"); return; }
-            if (battery.childItem == null || !PowerHelper.CanDrawPowerSource(battery.childItem, EnergyPerMix))
-            { Status("low_power"); return; }
             GameItem t = target.childItem, s = source.childItem;
             int[] beforeTarget = WaterHelper.GetLiquidParts(t);
             int[] beforeSource = WaterHelper.GetLiquidParts(s);
@@ -277,7 +272,6 @@ namespace ProbablyStolenMixer
             WaterHelper.ResetLastScanResult(s);
             t.Validate();
             s.Validate();
-            PowerHelper.DrawPowerSource(battery.childItem, EnergyPerMix);
             Refresh();
             int total = WaterHelper.GetTotalVolume(t);
             double actual = Amount(t, Liquid.Liquids[SelectedIndex]) * 100.0 / total;

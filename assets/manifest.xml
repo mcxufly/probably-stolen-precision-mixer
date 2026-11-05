@@ -3,8 +3,8 @@
   <ID>xufly_precision_mixer</ID>
   <Name>Precision Mixer / 精密配比机</Name>
   <Author>XuFly</Author>
-  <ModVersion>0.1.4</ModVersion>
-  <Description>Mix fluids to a target percentage using source bottles. English / 中文. Buy from Dr. Jackson; 2 power per mix. Back up saves; empty and remove machines before uninstalling. 使用原料瓶调配指定百分比，支持中英文。杰克逊博士处购买，每次耗电2。请备份存档；卸载前取出瓶子与电池并处理掉机器。</Description>
+  <ModVersion>0.1.5</ModVersion>
+  <Description>Mix fluids to a target percentage using source bottles. No battery needed. English / 中文. Buy from Dr. Jackson. Back up saves; remove machines before uninstalling. 使用原料瓶调配指定百分比，无需电池，支持中英文。杰克逊博士处购买。请备份存档；卸载前取出瓶子并处理掉机器。</Description>
   <GameVersions><Version>0.46D</Version></GameVersions>
   <Prerequisites />
   <Assemblies><Assembly>ProbablyStolenMixer.dll</Assembly></Assemblies>
