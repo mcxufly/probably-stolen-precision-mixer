@@ -1,6 +1,6 @@
 # 精密配比机 / Precision Mixer
 
-《深空当铺：可能是偷的》Mod，版本 0.1.3。按本机 `VERSION 100-Rev6` / Steam build 26337366 的真实程序集编译。
+《深空当铺：可能是偷的》Mod，版本 0.1.4。按本机 Steam build 26337366 的真实程序集编译。兼容版本填写 Unity `PlayerSettings.bundleVersion` / `Application.version`：`0.46D`；游戏内部显示字符串 `VERSION 100-Rev6` 不用于模组兼容性匹配。
 
 ## 安装
 
@@ -88,7 +88,7 @@ Probably Stolen/
 - 尚未在运行中的游戏内点击测试：机器 UI 的实际布局、商店获取、读档还原和电量/液体交互需要游戏内验收。本版作为可试用的首版发布。
 
 算法测试：`dotnet run --project tests/MixPlanner.Tests.csproj -c Release`。
-实际游戏 API 检查：`dotnet run --project verification/GameApiChecks.csproj -c Release`。
+实际游戏 API 检查：`dotnet run --project verification/GameApiChecks.csproj -c Release -- 0.46D`。最后一个参数是从本机 Unity PlayerSettings 读取的产品版本；检查使用游戏自身的版本归一化方法，并验证清单兼容性。
 
 ## 文件范围
 

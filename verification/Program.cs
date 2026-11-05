@@ -51,6 +51,19 @@ class Program
         var manifest = ModLoader.ParseManifestForTools(folder, out string problem);
         if (manifest == null || problem != null) throw new Exception("Manifest invalid: " + problem);
         Console.WriteLine("Game manifest parser passed: " + manifest.ID + " / " + manifest.ModVersion);
+        if (args.Length != 1) throw new ArgumentException("Pass the game's PlayerSettings.bundleVersion as the only argument.");
+        var normalizeVersion = typeof(ModUIManager).GetMethod("NormalizeVersion", BindingFlags.NonPublic | BindingFlags.Static)!;
+        string Normalize(string value) => (string)normalizeVersion.Invoke(null, new object[] { value })!;
+        string actual = Normalize(args[0]);
+        bool Matches(string declared)
+        {
+            string version = Normalize(declared);
+            return version.Length > 0 && actual.Length > 0 &&
+                (version == actual || version.StartsWith(actual + ".") || actual.StartsWith(version + "."));
+        }
+        if (Matches("VERSION 100-Rev6")) throw new Exception("Display-version regression check failed");
+        if (!manifest.GameVersions.Any(Matches)) throw new Exception("Manifest does not match Application.version " + args[0]);
+        Console.WriteLine("Compatibility passed using game NormalizeVersion: " + string.Join(",", manifest.GameVersions) + " matches " + args[0]);
         var scan = ModScanner.Scan(new[] { Path.Combine(folder, "ProbablyStolenMixer.dll") }, allowed, folder, false);
         Console.WriteLine("Scanner: " + scan.MethodsScanned + " methods; capabilities=" + string.Join(",", scan.Capabilities));
         Console.WriteLine(scan.FormatFindings(100));
