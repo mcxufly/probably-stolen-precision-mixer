@@ -2,6 +2,12 @@
 
 GitHub repository: https://github.com/mcxufly/probably-stolen-precision-mixer
 
+Published v0.1.8: https://github.com/mcxufly/probably-stolen-precision-mixer/releases/tag/v0.1.8
+
+Public Workshop item: https://steamcommunity.com/sharedfiles/filedetails/?id=3834261506
+
+Workshop ID `3834261506` is recorded in `workshop-id.txt`. Fresh checkouts reuse it automatically; a conflicting nonzero ID in the local VDF aborts upload rather than updating the wrong item. Public page, creator, preview, bilingual description and subscribe controls were verified without signing into Steam.
+
 ## Steam Workshop / 创意工坊
 
 The upload is configured as **public** for App ID `4348910`. Login must use a Steam account that owns the game. Do not place passwords, Steam Guard codes, Steam config files, or auth caches in the repository.

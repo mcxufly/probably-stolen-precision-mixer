@@ -1,5 +1,7 @@
 # v0.1.8 — Precision Mixer / 精密配比机
 
+[Subscribe on Steam Workshop / 创意工坊订阅](https://steamcommunity.com/sharedfiles/filedetails/?id=3834261506)
+
 A battery-free metered fluid mixer for Probably Stolen. Buy from Dr. Jackson (base value 350), insert target/source bottles, choose a component, and enter a target percentage.
 
 - Native component dropdown and percentage entry (0.1% input steps).

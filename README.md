@@ -1,6 +1,6 @@
 # 精密配比机 / Precision Mixer
 
-Source: https://github.com/mcxufly/probably-stolen-precision-mixer · [Releases](https://github.com/mcxufly/probably-stolen-precision-mixer/releases) · [Publishing / 发布说明](publishing/README.md)
+Source: https://github.com/mcxufly/probably-stolen-precision-mixer · [Releases](https://github.com/mcxufly/probably-stolen-precision-mixer/releases) · [Steam Workshop / 创意工坊](https://steamcommunity.com/sharedfiles/filedetails/?id=3834261506) · [Publishing / 发布说明](publishing/README.md)
 
 《深空当铺：可能是偷的》Mod，版本 0.1.8。按本机 Steam build 26337366 的真实程序集编译。兼容版本填写 Unity `PlayerSettings.bundleVersion` / `Application.version`：`0.46D`；游戏内部显示字符串 `VERSION 100-Rev6` 不用于模组兼容性匹配。
 

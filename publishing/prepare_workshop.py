@@ -11,12 +11,19 @@ def quote(value):
 
 
 def main():
-    item_id = "0"
+    recorded = ROOT / "publishing/workshop-id.txt"
+    item_id = recorded.read_text().strip() if recorded.exists() else "0"
+    if not item_id.isdigit():
+        raise SystemExit("Invalid recorded workshop ID.")
     if TARGET.exists():
         match = re.search(r'"publishedfileid"\s+"(\d+)"', TARGET.read_text())
         if not match:
             raise SystemExit("Existing workshop.vdf has no publishedfileid; refusing to risk duplicate publication.")
-        item_id = match.group(1)
+        local_id = match.group(1)
+        if local_id != "0" and item_id != "0" and local_id != item_id:
+            raise SystemExit("Local workshop ID differs from the recorded public item; refusing to upload.")
+        if local_id != "0":
+            item_id = local_id
     folder = ROOT / "dist/PrecisionMixer"
     if not (folder / "manifest.xml").is_file() or not (folder / "ProbablyStolenMixer.dll").is_file():
         raise SystemExit("Build the mod before preparing upload.")
