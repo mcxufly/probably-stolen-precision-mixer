@@ -1,0 +1,11 @@
+.tools/
+.dotnet/
+.nuget/
+.inspect/
+bin/
+obj/
+**/bin/
+**/obj/
+dist/
+*.zip
+**/result.txt

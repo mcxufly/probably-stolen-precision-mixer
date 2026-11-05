@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <AssemblyName>ProbablyStolenMixer</AssemblyName>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <GameDir Condition="'$(GameDir)' == ''">/data/SteamLibrary/steamapps/common/Probably Stolen</GameDir>
+    <ManagedDir>$(GameDir)/Probably Stolen_Data/Managed</ManagedDir>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="src/**/*.cs" />
+    <Reference Include="Assembly-CSharp"><HintPath>$(ManagedDir)/Assembly-CSharp.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.CoreModule"><HintPath>$(ManagedDir)/UnityEngine.CoreModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Unity.TextMeshPro"><HintPath>$(ManagedDir)/Unity.TextMeshPro.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+  <Target Name="StageMod" AfterTargets="Build">
+    <ItemGroup><ModAssets Include="assets/**/*" /></ItemGroup>
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(MSBuildProjectDirectory)/dist/PrecisionMixer" />
+    <Copy SourceFiles="@(ModAssets)" DestinationFiles="@(ModAssets->'$(MSBuildProjectDirectory)/dist/PrecisionMixer/%(RecursiveDir)%(Filename)%(Extension)')" />
+    <Copy SourceFiles="$(MSBuildProjectDirectory)/README.md" DestinationFolder="$(MSBuildProjectDirectory)/dist/PrecisionMixer" />
+  </Target>
+</Project>
