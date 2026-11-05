@@ -145,7 +145,9 @@ foreach (var test in tests)
         Console.Error.WriteLine($"FAIL {test.Name}: {error.Message}");
     }
 }
-Console.WriteLine($"{tests.Length - failures}/{tests.Length} test groups passed.");
+Console.WriteLine($"{tests.Length - failures}/{tests.Length} baseline test groups passed.");
+try { MeteredMixTests.Run(); Console.WriteLine("PASS metered mixing: 8 groups including 500 seeded grid cases."); }
+catch (Exception error) { failures++; Console.Error.WriteLine($"FAIL metered mixing: {error.Message}"); }
 return failures == 0 ? 0 : 1;
 
 static void Transfer(MixResult result, int expected, double fraction)

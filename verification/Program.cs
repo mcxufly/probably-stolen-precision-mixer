@@ -38,9 +38,31 @@ class Program
             double fraction = ((long)targetAmount + moved[selected]) / (double)(total + (long)plan.TransferMicroliters);
             if (Math.Abs(fraction - desired / 100) > MixPlanner.FractionTolerance)
                 throw new Exception("Actual game rounding exceeded tolerance");
+            double previousError = Math.Abs((double)targetAmount / total - desired / 100);
+            for (int level = 0; level <= 4; level++)
+            {
+                var metered = MeteredMixPlanner.Plan(total, targetAmount, total + sourceTotal,
+                    sourceTotal, source[selected], desired, level,
+                    amount => WaterHelper.SplitProportionally(source, amount)[selected]);
+                if (!metered.Success)
+                {
+                    if (metered.Failure != MixFailure.PrecisionLimit) throw new Exception("Unexpected metering failure");
+                    continue;
+                }
+                int amount = metered.TransferMicroliters;
+                if (amount % MeteredMixPlanner.ResolutionMicroliters(level) != 0 || amount > sourceTotal)
+                    throw new Exception("Metered dose not on resolution grid");
+                int[] transfer = WaterHelper.SplitProportionally(source, amount);
+                if (transfer.Sum() != amount) throw new Exception("Metered volume not conserved");
+                double actualFraction = ((long)targetAmount + transfer[selected]) / (double)((long)total + amount);
+                double error = Math.Abs(actualFraction - desired / 100);
+                if (error > previousError + 1e-12) throw new Exception($"Upgrade reduced accuracy trial={trial} level={level} previous={previousError:R} actual={error:R} total={total} component={targetAmount} source={sourceTotal}/{source[selected]} desired={desired:R}");
+                if (Math.Abs(actualFraction - metered.PredictedFraction) > 1e-12) throw new Exception("Metered prediction mismatch");
+                previousError = error;
+            }
             checks++;
         }
-        Console.WriteLine("Actual WaterHelper.SplitProportionally: " + checks + " transfer cases passed.");
+        Console.WriteLine("Actual WaterHelper.SplitProportionally: " + checks + " transfer cases and all five metering levels passed.");
         var tiny = WaterHelper.SplitProportionally(new[] { 2, 3 }, 3);
         if (tiny[0] != 1 || tiny[1] != 2 || tiny[0] / 4.0 != 0.25) throw new Exception("Tiny-volume rounding regression");
         Console.WriteLine("Tiny-volume rounding regression passed: 1uL + 3uL yields exactly 25%.");
@@ -77,10 +99,17 @@ class Program
             var machine = mod.MainModule.Types.Single(t => t.Name == "MixerMachine");
             if (machine.Fields.Count(f => f.FieldType.Name == "GameSlotInventory") != 2)
                 throw new Exception("Mixer must have exactly two bottle slots and no battery slot");
-            var references = mod.MainModule.GetMemberReferences().OfType<DseCecil.MethodReference>();
+            if (machine.Fields.Count(f => f.FieldType.Name == "GameGridInventory") != 1)
+                throw new Exception("Mixer must have one chemical module grid");
+            var references = mod.MainModule.GetMemberReferences().OfType<DseCecil.MethodReference>().ToArray();
+            if (!references.Any(m => m.DeclaringType.Name == "MachineBlender" && m.Name == "SetupChemModuleGrid"))
+                throw new Exception("Missing native chemical module installation/locking setup");
             if (references.Any(m => m.DeclaringType.Name == "PowerHelper" || m.Name == "SetupBatterySlot" || m.Name == "PowerPanel"))
                 throw new Exception("Battery or power dependency remains in the mod");
-            Console.WriteLine("Battery-free checks passed: two bottle slots; no power checks, power draw or battery setup.");
+            string source = File.ReadAllText(Path.Combine("src", "MixerMachine.cs"));
+            if (source.Contains("mayInventoryAddItemFunc +="))
+                throw new Exception("Module acceptance must not OR-combine the cap predicate");
+
         }
         var scan = ModScanner.Scan(new[] { Path.Combine(folder, "ProbablyStolenMixer.dll") }, allowed, folder, false);
         Console.WriteLine("Scanner: " + scan.MethodsScanned + " methods; capabilities=" + string.Join(",", scan.Capabilities));

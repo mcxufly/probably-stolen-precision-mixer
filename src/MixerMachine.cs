@@ -10,6 +10,9 @@ namespace ProbablyStolenMixer
         private const string LiquidTag = "XUFLY_MIX_LIQUID";
         private readonly GameSlotInventory target = new GameSlotInventory(2, 3);
         private readonly GameSlotInventory source = new GameSlotInventory(2, 3);
+        private readonly GameGridInventory modules = new GameGridInventory(4, 4);
+        private readonly MachineryText metering = new MachineryText();
+        private readonly MachineryText moduleHint = new MachineryText();
         private readonly MachineryText substance = new MachineryText();
         private ComponentDropdown componentDropdown;
         private readonly List<Liquid> componentChoices = new List<Liquid>();
@@ -64,13 +67,14 @@ namespace ProbablyStolenMixer
             componentDropdown = new ComponentDropdown(SelectLiquid);
             var controls = MachineryStack.Vertical(
                 substance, componentDropdown,
-                percentage, Button("enter_percent", OpenPercentInput), slider,
+                percentage, metering, Button("enter_percent", OpenPercentInput), slider,
                 MachineryStack.Horizontal(Button("decrease_percent", () => ChangePercent(-1)), Button("increase_percent", () => ChangePercent(1))),
                 targetInfo, sourceInfo, preview,
                 MachineryStack.Horizontal(Button("refresh_preview", Refresh), Button("start_mix", Mix)), status);
             var window = MachineHelper.CreateMachineryWindow(true,
                 Panel("panel_target", target, "target"),
-                Panel("panel_source", source, "source"), Panel("panel_control", controls, "control"));
+                Panel("panel_source", source, "source"), Panel("panel_control", controls, "control"),
+                Panel("panel_modules", MachineryStack.Vertical(new MachineryIntake(modules), moduleHint), "modules"));
             machine = ItemDirectory.CreateEmptyItem().SetContentWindow(window)
                 .SetSpriteAndShapeFromMod(ModEntry.Id, "precision_mixer");
             machine.name = L10n.Text("item_name");
@@ -79,6 +83,12 @@ namespace ProbablyStolenMixer
             machine.unitValue = 350;
             machine.SetGameItemType(TypeHelper.MACHINE);
             machine.EnableTag(ContainerHelper.CONTAINER_TAG);
+            MachineBlender.SetupChemModuleGrid(modules, machine);
+            modules.mayInventoryAddItemFunc = (item, _) => GeneralHelper.IsItemOwned(machine)
+                && GeneralHelper.IsItemOwned(item) && item.IsTag(ModuleHelper.MODULE_TYPE_CHEM)
+                && item.IsTag(ModuleHelper.MODULE_TAG) && ModuleCount < 4 && item.unitCount == 1;
+            modules.onSlotAddItemEndFunc += (_, __, ___) => Refresh();
+            modules.onSlotRemoveItemEndFunc += (_, __, ___) => Refresh();
             machine.ModifyTag(PercentTag, s => s.Enable().SetInt(300));
             machine.ModifyTag(LiquidTag, s => s.Enable().SetString(Liquid.LIQUID_WATER));
             slider.onChanged += value => SetPercent((int)Math.Round(value * 10));
@@ -95,6 +105,11 @@ namespace ProbablyStolenMixer
         private static bool AcceptBottle(GameItem item) => GeneralHelper.IsItemOwned(item)
             && item.IsTag(WaterHelper.LIQUID_CONTAINER_TAG) && !item.IsTag(WaterHelper.FILTER_CONTAINER_TAG)
             && !item.IsTag("WINE_CONTAINER_TAG") && WaterFeatureHelper.GetWaterFeature(item) != null;
+
+        private int ModuleCount => modules.childItems.FindAll(item => item.IsTag(ModuleHelper.MODULE_TYPE_CHEM)).Count;
+        private int Resolution => MeteredMixPlanner.ResolutionMicroliters(ModuleCount);
+        private static string Deviation(double fraction, int percent) =>
+            (fraction * 100 - percent / 10.0).ToString("+0.000;-0.000;0.000", CultureInfo.InvariantCulture);
 
         private int Percent => Math.Max(0, Math.Min(1000, machine.GetTagReadonly(PercentTag).GetInt()));
         private string SelectedId => machine.GetTagReadonly(LiquidTag).GetString();
@@ -196,6 +211,8 @@ namespace ProbablyStolenMixer
             }
             foreach (var update in refreshLabels) update();
             RefreshComponents();
+            Text(metering, L10n.Text("metering", ModuleCount, Number(Resolution / 1000.0)));
+            Text(moduleHint, L10n.Text("module_hint"));
             machine.name = L10n.Text("item_name");
             machine.shortDescription = L10n.Text("item_description");
             machine.flavorText = L10n.Text("item_flavor");
@@ -206,7 +223,7 @@ namespace ProbablyStolenMixer
             Text(targetInfo, BottleInfo(L10n.Text("target_label"), target.childItem, liquid));
             Text(sourceInfo, BottleInfo(L10n.Text("source_label"), source.childItem, liquid));
             if (TryPlan(out int amount, out double fraction, out string reason))
-                Text(preview, amount == 0 ? L10n.Text("preview_noop") : L10n.Text("preview_transfer", Number(amount / 1000.0), Number(fraction * 100, "0.000")));
+                Text(preview, amount == 0 ? L10n.Text("preview_noop") : L10n.Text("preview_transfer", Number(amount / 1000.0), Number(fraction * 100, "0.000"), Deviation(fraction, Percent)));
             else Text(preview, reason);
         }
 
@@ -220,36 +237,18 @@ namespace ProbablyStolenMixer
             { reason = L10n.Text("unsupported_bottle"); return false; }
             int total = WaterHelper.GetTotalVolume(t);
             int sourceTotal = s == null ? 0 : WaterHelper.GetTotalVolume(s);
-            var plan = MixPlanner.Plan(total, Amount(t, Liquid.Liquids[index]), WaterHelper.GetTotalCapacity(t),
-                sourceTotal, Amount(s, Liquid.Liquids[index]), Percent / 10.0);
-            if (!plan.Success && plan.Failure != MixFailure.PrecisionLimit)
-            { reason = FailureText(plan.Failure); return false; }
+            int[] parts = s == null ? Array.Empty<int>() : WaterHelper.GetLiquidParts(s);
+            var plan = MeteredMixPlanner.Plan(total, Amount(t, Liquid.Liquids[index]), WaterHelper.GetTotalCapacity(t),
+                sourceTotal, Amount(s, Liquid.Liquids[index]), Percent / 10.0, ModuleCount,
+                volume => WaterHelper.SplitProportionally(parts, volume)[index]);
+            if (!plan.Success)
+            {
+                reason = plan.Failure == MixFailure.PrecisionLimit && Resolution > 1
+                    ? L10n.Text("metering_limit") : FailureText(plan.Failure);
+                return false;
+            }
             amount = plan.TransferMicroliters;
             fraction = plan.PredictedFraction;
-            if (plan.Success && amount == 0) return true;
-            if (plan.Failure == MixFailure.PrecisionLimit)
-            {
-                double sourceFraction = Amount(s, Liquid.Liquids[index]) / (double)sourceTotal;
-                double desired = Percent / 1000.0;
-                double ideal = (desired * total - Amount(t, Liquid.Liquids[index])) / (sourceFraction - desired);
-                amount = (int)Math.Round(ideal);
-            }
-            int[] parts = WaterHelper.GetLiquidParts(s);
-            int max = Math.Min(sourceTotal, WaterHelper.GetFreeCapacity(t));
-            double best = double.MaxValue;
-            int bestAmount = amount;
-            // Check actual integer component allocation before changing either bottle.
-            for (int offset = -32; offset <= 32; offset++)
-            {
-                long candidate = (long)amount + offset;
-                if (candidate <= 0 || candidate > max) continue;
-                int[] transferred = WaterHelper.SplitProportionally(parts, (int)candidate);
-                double projected = ((long)Amount(t, Liquid.Liquids[index]) + transferred[index]) / (double)(total + candidate);
-                double error = Math.Abs(projected - Percent / 1000.0);
-                if (error < best) { best = error; bestAmount = (int)candidate; fraction = projected; }
-            }
-            if (best > 0.00005) { reason = L10n.Text("precision_limit"); return false; }
-            amount = bestAmount;
             return true;
         }
 
@@ -282,7 +281,7 @@ namespace ProbablyStolenMixer
             Refresh();
             int total = WaterHelper.GetTotalVolume(t);
             double actual = Amount(t, Liquid.Liquids[SelectedIndex]) * 100.0 / total;
-            Status("mix_complete", Number(amount / 1000.0), Number(actual, "0.000"));
+            Status("mix_complete", Number(amount / 1000.0), Number(actual, "0.000"), Deviation(actual / 100, Percent));
         }
 
         private static string FailureText(MixFailure failure)

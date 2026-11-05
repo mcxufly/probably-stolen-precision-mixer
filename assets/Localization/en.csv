@@ -1,5 +1,5 @@
 item_name,Precision Mixer
-item_description,"Consumes fluid from a source bottle to bring the selected component in the target bottle to a specified percentage. No battery or power required; percentage step: 0.1%."
+item_description,"Transfers source fluid toward a target percentage. Chemical modules improve metering from 10 mL to 1 µL (up to 4, locked after installation). No battery required."
 item_flavor,Every drop in its proper place.
 enter_percent,Enter percentage (%)
 decrease_percent,-0.1%
@@ -25,14 +25,18 @@ source_label,Source
 component_label,Component: {0}
 percent_label,Target: {0}%
 preview_noop,Already at the target percentage.
-preview_transfer,Add {0} mL → {1}%
+preview_transfer,Add {0} mL → {1}% ({2} pp)
+panel_modules,Chemical modules
+module_hint,Max 4. Locked after installation.
+metering,Modules {0}/4 | Dose step {1} mL
+metering_limit,Dose step too coarse to improve the mixture. Install chemical modules or use more fluid.
 missing_bottles,Insert a target bottle and a source bottle.
 unsupported_bottle,Use owned ordinary bottles; filter and wine containers are unsupported.
 precision_limit,Microliter precision cannot reach this target. Use more fluid.
 operation_failed,Cannot mix. See the preview for details.
 buy_first,Purchase this machine first.
 noop_status,Already at target. No fluid consumed.
-mix_complete,"Done: added {0} mL; current percentage: {1}%."
+mix_complete,"Done: added {0} mL; {1}% ({2} pp)."
 empty_target,Target bottle is empty. Add some base fluid first.
 empty_source,Source bottle is empty or missing.
 unreachable,This source cannot reach the target. Use a suitable concentration.
