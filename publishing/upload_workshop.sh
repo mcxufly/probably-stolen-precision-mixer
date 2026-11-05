@@ -6,8 +6,12 @@ if [[ $# -ne 1 ]]; then
     printf '%s\n' 'Usage: bash publishing/upload_workshop.sh YOUR_STEAM_LOGIN_NAME' >&2
     exit 2
 fi
-if [[ ! -x "${ROOT}/.tools/steamcmd/steamcmd.sh" ]]; then
-    printf '%s\n' 'SteamCMD not found; see publishing/README.md.' >&2
+STEAMCMD_BIN="${STEAMCMD_BIN:-$(command -v steamcmd || true)}"
+if [[ -z "${STEAMCMD_BIN}" ]]; then
+    STEAMCMD_BIN="${ROOT}/.tools/steamcmd/steamcmd.sh"
+fi
+if [[ ! -x "${STEAMCMD_BIN}" ]]; then
+    printf '%s\n' 'SteamCMD not found; install steamcmd or set STEAMCMD_BIN.' >&2
     exit 1
 fi
 # Never put a password on the command line; SteamCMD will prompt interactively.
@@ -15,4 +19,5 @@ fi
 export HOME="${ROOT}/.tools/steam-home"
 mkdir -p "${HOME}"
 cd "${ROOT}/.tools/steamcmd"
-exec ./steamcmd.sh +login "$1" +workshop_build_item "${ROOT}/.tools/steamcmd/workshop.vdf" +quit
+printf 'Using SteamCMD: %s\n' "${STEAMCMD_BIN}"
+exec "${STEAMCMD_BIN}" +login "$1" +workshop_build_item "${ROOT}/.tools/steamcmd/workshop.vdf" +quit

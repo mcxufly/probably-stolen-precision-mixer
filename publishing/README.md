@@ -9,7 +9,7 @@ The upload is configured as **public** for App ID `4348910`. Login must use a St
 本次上传可见性为**公开**。请使用拥有游戏的 Steam 账号，在你自己的终端输入密码与 Steam Guard；不要把密码或验证码发到聊天里。
 
 1. Build: `bash build.sh`.
-2. The local SteamCMD installation is `.tools/steamcmd` (ignored by Git). If missing, download the Linux archive from Valve's official `https://media.steampowered.com/installer/steamcmd_linux.tar.gz` and extract it there. SteamCMD needs 32-bit C/C++ runtime support.
+2. The script prefers `steamcmd` installed on `PATH` (currently `/usr/bin/steamcmd`), or an executable path supplied as `STEAMCMD_BIN`. It falls back to `.tools/steamcmd/steamcmd.sh`. SteamCMD needs 32-bit C/C++ runtime support. Its HOME is isolated under ignored `.tools/steam-home`, so an existing login under your usual home may need to be repeated.
 3. Run in a terminal:
 
    ```bash
