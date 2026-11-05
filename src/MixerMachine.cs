@@ -13,6 +13,8 @@ namespace ProbablyStolenMixer
         private readonly GameSlotInventory target = new GameSlotInventory(2, 3);
         private readonly GameSlotInventory source = new GameSlotInventory(2, 3);
         private readonly MachineryText substance = new MachineryText();
+        private ComponentDropdown componentDropdown;
+        private readonly List<Liquid> componentChoices = new List<Liquid>();
         private readonly MachineryText percentage = new MachineryText();
         private readonly MachineryText targetInfo = new MachineryText();
         private readonly MachineryText sourceInfo = new MachineryText();
@@ -61,9 +63,9 @@ namespace ProbablyStolenMixer
         {
             target.mayInventoryAddItemFunc = (item, _) => AcceptBottle(item);
             source.mayInventoryAddItemFunc = (item, _) => AcceptBottle(item);
+            componentDropdown = new ComponentDropdown(SelectLiquid);
             var controls = MachineryStack.Vertical(
-                substance,
-                MachineryStack.Horizontal(Button("previous_component", () => SelectLiquid(-1)), Button("next_component", () => SelectLiquid(1))),
+                substance, componentDropdown,
                 percentage, Button("enter_percent", OpenPercentInput), slider,
                 MachineryStack.Horizontal(Button("decrease_percent", () => ChangePercent(-1)), Button("increase_percent", () => ChangePercent(1))),
                 targetInfo, sourceInfo, preview,
@@ -149,17 +151,27 @@ namespace ProbablyStolenMixer
             slider.SetValue(Percent / 10f);
         }
 
-        private void SelectLiquid(int direction)
+        private void SelectLiquid(int index)
         {
-            var choices = new List<Liquid>();
-            foreach (var liquid in Liquid.Liquids)
-                if (liquid.identifier == SelectedId || Amount(target.childItem, liquid) > 0 || Amount(source.childItem, liquid) > 0)
-                    choices.Add(liquid);
-            if (choices.Count == 0) return;
-            int index = choices.FindIndex(l => l.identifier == SelectedId);
-            index = (Math.Max(0, index) + direction + choices.Count) % choices.Count;
-            machine.ModifyTag(LiquidTag, s => s.Enable().SetString(choices[index].identifier));
+            if (index < 0 || index >= componentChoices.Count) return;
+            machine.ModifyTag(LiquidTag, s => s.Enable().SetString(componentChoices[index].identifier));
             Refresh();
+        }
+
+        private void RefreshComponents()
+        {
+            componentChoices.Clear();
+            var labels = new List<string>();
+            int selected = 0;
+            foreach (var liquid in Liquid.Liquids)
+            {
+                if (liquid.identifier != SelectedId && Amount(target.childItem, liquid) <= 0 && Amount(source.childItem, liquid) <= 0)
+                    continue;
+                if (liquid.identifier == SelectedId) selected = componentChoices.Count;
+                componentChoices.Add(liquid);
+                labels.Add(L10n.LiquidName(liquid));
+            }
+            componentDropdown.SetOptions(labels, selected);
         }
 
         private static int Amount(GameItem item, Liquid liquid) => item == null ? 0 : item.GetTagReadonly(liquid.currentPart).GetInt();
@@ -179,6 +191,7 @@ namespace ProbablyStolenMixer
             int index = SelectedIndex;
             if (index < 0 || machine == null) return;
             foreach (var update in refreshLabels) update();
+            RefreshComponents();
             machine.name = L10n.Text("item_name");
             machine.shortDescription = L10n.Text("item_description");
             machine.flavorText = L10n.Text("item_flavor");

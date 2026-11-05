@@ -1,8 +1,6 @@
 item_name,Precision Mixer
 item_description,"Consumes fluid from a source bottle to bring the selected component in the target bottle to a specified percentage. Uses 2 power per mix; percentage step: 0.1%."
 item_flavor,Every drop in its proper place.
-previous_component,Previous
-next_component,Next
 enter_percent,Enter percentage (%)
 decrease_percent,-0.1%
 increase_percent,+0.1%

@@ -1,8 +1,6 @@
 item_name,精密配比机
 item_description,消耗原料瓶中的混合液，把待处理瓶的指定成分调至目标百分比。每次耗电2；比例步进0.1%。
 item_flavor,让每一滴都恰到好处。
-previous_component,上一成分
-next_component,下一成分
 enter_percent,填写比例 (%)
 decrease_percent,-0.1%
 increase_percent,+0.1%
