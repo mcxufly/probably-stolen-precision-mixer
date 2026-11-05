@@ -187,6 +187,13 @@ namespace ProbablyStolenMixer
         {
             int index = SelectedIndex;
             if (index < 0 || machine == null) return;
+            string sprite = MixerSprite.Key(target.childItem != null, source.childItem != null);
+            if (machine.spritePath != sprite)
+            {
+                // Refresh only the displayed art: all variants share the same 4x4 shape.
+                machine.useSpriteFromMod = true;
+                machine.SetSpriteQuick(ModEntry.Id, sprite);
+            }
             foreach (var update in refreshLabels) update();
             RefreshComponents();
             machine.name = L10n.Text("item_name");

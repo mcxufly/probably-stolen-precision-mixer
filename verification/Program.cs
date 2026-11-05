@@ -48,6 +48,14 @@ class Program
         string game = "/data/SteamLibrary/steamapps/common/Probably Stolen/Probably Stolen_Data/Managed";
         var allowed = System.IO.Directory.GetFiles(game, "*.dll").Select(Path.GetFileNameWithoutExtension).ToArray();
         string folder = Path.GetFullPath("dist/PrecisionMixer");
+        string[] spriteStates = { "precision_mixer", "precision_mixer_target", "precision_mixer_source", "precision_mixer_both" };
+        foreach (int state in new[] { 0, 1, 3, 2, 0, 2, 3, 1, 0 })
+        {
+            string key = MixerSprite.Key((state & 1) != 0, (state & 2) != 0);
+            if (key != spriteStates[state] || !File.Exists(Path.Combine(folder, "Textures", "Items", key + ".png")))
+                throw new Exception("Missing or incorrect container-state sprite: " + key);
+        }
+        Console.WriteLine("Sprite states passed: all four variants exist; insertion/removal sequences select the correct art.");
         var manifest = ModLoader.ParseManifestForTools(folder, out string problem);
         if (manifest == null || problem != null) throw new Exception("Manifest invalid: " + problem);
         Console.WriteLine("Game manifest parser passed: " + manifest.ID + " / " + manifest.ModVersion);
