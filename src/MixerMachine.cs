@@ -30,7 +30,7 @@ namespace ProbablyStolenMixer
             var controls = MachineryStack.Vertical(
                 substance,
                 MachineryStack.Horizontal(new MachineryButton("上一成分", () => SelectLiquid(-1)), new MachineryButton("下一成分", () => SelectLiquid(1))),
-                percentage, slider,
+                percentage, new MachineryButton("填写比例 (%)", OpenPercentInput), slider,
                 MachineryStack.Horizontal(new MachineryButton("-0.1%", () => ChangePercent(-1)), new MachineryButton("+0.1%", () => ChangePercent(1))),
                 targetInfo, sourceInfo, preview,
                 MachineryStack.Horizontal(new MachineryButton("刷新预览", Refresh), new MachineryButton("开始配比", Mix)), status);
@@ -71,6 +71,42 @@ namespace ProbablyStolenMixer
         {
             machine.ModifyTag(PercentTag, s => s.Enable().SetInt(Math.Max(0, Math.Min(1000, tenths))));
             Refresh();
+        }
+
+        private void OpenPercentInput()
+        {
+            if (CustomUIManager.Instance == null) return;
+            string value = Number(Percent / 10.0, "0.0");
+            CustomUIWindow dialog = null;
+            void Apply()
+            {
+                string text = value.Trim().TrimEnd('%', '％').Trim();
+                if (!double.TryParse(text, NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign,
+                    CultureInfo.InvariantCulture, out double parsed) || double.IsNaN(parsed) || double.IsInfinity(parsed)
+                    || parsed < 0 || parsed > 100)
+                {
+                    dialog?.Get("error")?.SetText("请输入0到100之间的数字，例如30或12.5。");
+                    return;
+                }
+                double tenths = Math.Round(parsed * 10, MidpointRounding.AwayFromZero);
+                if (Math.Abs(parsed * 10 - tenths) > 0.000001)
+                {
+                    dialog?.Get("error")?.SetText("当前精度为0.1%，请最多输入一位小数。");
+                    return;
+                }
+                SetPercent((int)tenths);
+                slider.SetValue(Percent / 10f);
+                Text(status, "目标比例已设置为" + Number(Percent / 10.0, "0.0") + "%。");
+                dialog?.Close();
+            }
+            dialog = CustomUIManager.Window(ModEntry.Id + ".percent", "填写目标比例 (%)", CustomUIManager.LAYER_PAPER)
+                .UseMachineryStyle().SetSize(400, 230)
+                .AddLabel("单位：%　范围：0–100　精度：0.1%")
+                .AddInput("例如：30 或 12.5", value, id: "percent", onTyping: text => value = text)
+                .AddLabel("", "error")
+                .AddButton("应用", Apply)
+                .AddButton("取消", () => dialog?.Close())
+                .Show();
         }
 
         private void ChangePercent(int delta)
