@@ -76,7 +76,7 @@ namespace ProbablyStolenMixer
             machine.name = L10n.Text("item_name");
             machine.shortDescription = L10n.Text("item_description");
             machine.flavorText = L10n.Text("item_flavor");
-            machine.unitValue = 650;
+            machine.unitValue = 350;
             machine.SetGameItemType(TypeHelper.MACHINE);
             machine.EnableTag(ContainerHelper.CONTAINER_TAG);
             machine.ModifyTag(PercentTag, s => s.Enable().SetInt(300));

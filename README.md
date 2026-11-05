@@ -1,6 +1,6 @@
 # 精密配比机 / Precision Mixer
 
-《深空当铺：可能是偷的》Mod，版本 0.1.6。按本机 Steam build 26337366 的真实程序集编译。兼容版本填写 Unity `PlayerSettings.bundleVersion` / `Application.version`：`0.46D`；游戏内部显示字符串 `VERSION 100-Rev6` 不用于模组兼容性匹配。
+《深空当铺：可能是偷的》Mod，版本 0.1.7。按本机 Steam build 26337366 的真实程序集编译。兼容版本填写 Unity `PlayerSettings.bundleVersion` / `Application.version`：`0.46D`；游戏内部显示字符串 `VERSION 100-Rev6` 不用于模组兼容性匹配。
 
 ## 安装
 
@@ -21,7 +21,7 @@ Probably Stolen/
 
 ## 获取机器
 
-在杰克逊博士的售卖清单中购买，基础价值 650，最终售价由游戏计算。安装前已经生成的售卖清单可能要等刷新。
+在杰克逊博士的售卖清单中购买，基础价值 350，最终售价由游戏计算。安装前已经生成的售卖清单可能要等刷新。
 
 也可以在游戏可执行文件旁新建空的 `dev.txt`，重启、进入一局游戏，按 F9，在 Spawn 栏点击「生成精密配比机」。这会生成机器，不会生成液体原料。`dev.txt` 是可选的开发工具开关，不需要随 Mod 安装。
 
