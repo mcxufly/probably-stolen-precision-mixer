@@ -8,6 +8,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="../src/MixPlanner.cs" Link="MixPlanner.cs" />
+    <Compile Include="../src/ManualDosePlanner.cs" Link="ManualDosePlanner.cs" />
+    <Compile Include="../src/MixerStockPolicy.cs" Link="MixerStockPolicy.cs" />
     <Compile Include="../src/MeteredMixPlanner.cs" Link="MeteredMixPlanner.cs" />
   </ItemGroup>
 </Project>

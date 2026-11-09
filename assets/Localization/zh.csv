@@ -1,5 +1,5 @@
 item_name,精密配比机
-item_description,消耗原料瓶中的混合液，向目标百分比定量配比。化学模组将计量步长从10mL提升至1µL，最多4个，安装后锁定。无需电池。
+item_description,仅掺杂可手动加入液体；自动浓度配比需持有化学检测仪。化学模组将计量步长从10mL提升至1µL。无需电池，博士每局最多出售一台。
 item_flavor,让每一滴都恰到好处。
 enter_percent,填写比例 (%)
 decrease_percent,-0.1%
@@ -9,7 +9,24 @@ start_mix,开始配比
 panel_target,待处理瓶
 panel_source,掺杂原料瓶
 panel_control,精密配比
-initial_status,放入两瓶液体，选择成分和比例。
+initial_status,放入两瓶液体，选择操作模式。
+mode_manual,模式：仅掺杂
+mode_auto,模式：自动浓度配比
+switch_manual,切换到仅掺杂
+switch_auto,切换到自动配比
+detector_required,持有化学检测仪才能自动配比；目前仅可掺杂。
+detector_present,已持有化学检测仪，两种模式均可使用。
+enter_dose,填写加入量 (mL)
+dose_title,手动加入量 (mL)
+dose_hint,加入量按当前模组计量步长向下取整，不分析成分。
+dose_invalid,请输入大于0的mL数，最多三位小数，上限2147483.647。
+dose_label,设定加入量：{0}mL
+decrease_dose,-1计量步长
+increase_dose,+1计量步长
+dose_too_small,设定量小于计量步长，请增大加入量或安装化学模组。
+bottle_volume,{0}：{1}mL（不分析成分）
+manual_preview,将加入{0}mL，不分析成分及成品浓度。
+manual_complete,已加入{0}mL，未进行浓度检测。
 input_title,填写目标比例 (%)
 input_hint,单位：%　范围：0–100　精度：0.1%
 input_placeholder,例如：30 或 12.5

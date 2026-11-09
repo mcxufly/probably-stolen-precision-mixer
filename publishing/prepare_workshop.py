@@ -27,6 +27,10 @@ def main():
     folder = ROOT / "dist/PrecisionMixer"
     if not (folder / "manifest.xml").is_file() or not (folder / "ProbablyStolenMixer.dll").is_file():
         raise SystemExit("Build the mod before preparing upload.")
+    import xml.etree.ElementTree as ET
+    version = ET.parse(folder / "manifest.xml").findtext("ModVersion")
+    if version != "0.1.9":
+        raise SystemExit(f"Workshop metadata still describes 0.1.9, not staged {version}; update and review it before publishing.")
     values = {
         "appid": "4348910",
         "publishedfileid": item_id,

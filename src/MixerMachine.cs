@@ -12,6 +12,17 @@ namespace ProbablyStolenMixer
     {
         private const string PercentTag = "XUFLY_MIX_PERCENT_TENTHS";
         private const string LiquidTag = "XUFLY_MIX_LIQUID";
+        private const string AutomaticModeTag = "XUFLY_MIX_AUTOMATIC";
+        private const string DoseTag = "XUFLY_MIX_DOSE_UL";
+        private MachineryStack automaticControls;
+        private MachineryStack manualControls;
+        private MachineryStack controls;
+        private MachineryButton modeButton;
+        private readonly MachineryText modeLabel = new MachineryText();
+        private readonly MachineryText detectorHint = new MachineryText();
+        private readonly MachineryText doseLabel = new MachineryText();
+        private CustomUIWindow percentDialog;
+        private bool detectorAvailable;
         private readonly GameSlotInventory target = new GameSlotInventory(2, 3);
         private readonly GameSlotInventory source = new GameSlotInventory(2, 3);
         private readonly GameGridInventory modules = new GameGridInventory(4, 4);
@@ -69,11 +80,14 @@ namespace ProbablyStolenMixer
             target.mayInventoryAddItemFunc = (item, _) => AcceptBottle(item);
             source.mayInventoryAddItemFunc = (item, _) => AcceptBottle(item);
             componentDropdown = new ComponentDropdown(SelectLiquid);
-            var controls = MachineryStack.Vertical(
-                substance, componentDropdown,
-                percentage, metering, Button("enter_percent", OpenPercentInput), slider,
-                MachineryStack.Horizontal(Button("decrease_percent", () => ChangePercent(-1)), Button("increase_percent", () => ChangePercent(1))),
-                targetInfo, sourceInfo, preview,
+            automaticControls = MachineryStack.Vertical(substance, componentDropdown,
+                percentage, Button("enter_percent", OpenPercentInput), slider,
+                MachineryStack.Horizontal(Button("decrease_percent", () => ChangePercent(-1)), Button("increase_percent", () => ChangePercent(1))));
+            manualControls = MachineryStack.Vertical(doseLabel, Button("enter_dose", OpenDoseInput),
+                MachineryStack.Horizontal(Button("decrease_dose", () => ChangeDose(-1)), Button("increase_dose", () => ChangeDose(1))));
+            modeButton = new MachineryButton("", ToggleMode);
+            controls = MachineryStack.Vertical(modeLabel, modeButton, detectorHint, metering,
+                automaticControls, manualControls, targetInfo, sourceInfo, preview,
                 MachineryStack.Horizontal(Button("refresh_preview", Refresh), Button("start_mix", Mix)), status);
             var window = MachineHelper.CreateMachineryWindow(true,
                 Panel("panel_target", target, "target"),
@@ -95,6 +109,7 @@ namespace ProbablyStolenMixer
             modules.onSlotRemoveItemEndFunc += (_, __, ___) => Refresh();
             machine.ModifyTag(PercentTag, s => s.Enable().SetInt(300));
             machine.ModifyTag(LiquidTag, s => s.Enable().SetString(Liquid.LIQUID_WATER));
+            machine.ModifyTag(DoseTag, s => s.Enable().SetInt(10000));
             slider.onChanged += value => SetPercent((int)Math.Round(value * 10));
             target.onSlotAddItemEndFunc += (_, __, ___) => Refresh();
             source.onSlotAddItemEndFunc += (_, __, ___) => Refresh();
@@ -115,6 +130,48 @@ namespace ProbablyStolenMixer
         private static string Deviation(double fraction, int percent) =>
             (fraction * 100 - percent / 10.0).ToString("+0.000;-0.000;0.000", CultureInfo.InvariantCulture);
 
+        private bool Automatic => detectorAvailable && machine.IsTag(AutomaticModeTag) && machine.GetTagReadonly(AutomaticModeTag).GetBool();
+        private int Dose => machine.IsTag(DoseTag) ? Math.Max(1, machine.GetTagReadonly(DoseTag).GetInt()) : 10000;
+
+        private void ToggleMode()
+        {
+            Refresh();
+            if (!detectorAvailable) { Status("detector_required"); return; }
+            bool enabled = !Automatic;
+            machine.ModifyTag(AutomaticModeTag, state => state.Enable().SetBool(enabled));
+            Status("initial_status");
+            Refresh();
+        }
+
+        private void ChangeDose(int direction)
+        {
+            long value = (long)Dose + direction * (long)Resolution;
+            machine.ModifyTag(DoseTag, state => state.Enable().SetInt((int)Math.Max(1, Math.Min(int.MaxValue, value))));
+            Refresh();
+        }
+
+        private void OpenDoseInput()
+        {
+            if (CustomUIManager.Instance == null) return;
+            string value = Number(Dose / 1000.0);
+            CustomUIWindow dialog = null;
+            void Apply()
+            {
+                if (!decimal.TryParse(value.Trim(), NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out decimal ml)
+                    || ml <= 0 || ml > int.MaxValue / 1000m || ml * 1000m != decimal.Truncate(ml * 1000m))
+                { dialog?.Get("error")?.SetText(L10n.Text("dose_invalid")); return; }
+                machine.ModifyTag(DoseTag, state => state.Enable().SetInt((int)(ml * 1000m)));
+                Refresh();
+                dialog?.Close();
+            }
+            dialog = CustomUIManager.Window(ModEntry.Id + ".dose", L10n.Text("dose_title"), CustomUIManager.LAYER_PAPER)
+                .UseMachineryStyle().SetSize(440, 240)
+                .AddLabel(L10n.Text("dose_hint"))
+                .AddInput("mL", value, id: "dose", onTyping: text => value = text)
+                .AddLabel("", "error").AddButton(L10n.Text("apply"), Apply)
+                .AddButton(L10n.Text("cancel"), () => dialog?.Close()).Show();
+        }
+
         private int Percent => Math.Max(0, Math.Min(1000, machine.GetTagReadonly(PercentTag).GetInt()));
         private string SelectedId => machine.GetTagReadonly(LiquidTag).GetString();
         private int SelectedIndex => Liquid.Liquids.FindIndex(l => l.identifier == SelectedId);
@@ -127,11 +184,14 @@ namespace ProbablyStolenMixer
 
         private void OpenPercentInput()
         {
-            if (CustomUIManager.Instance == null) return;
+            Refresh();
+            if (CustomUIManager.Instance == null || !Automatic) return;
             string value = Number(Percent / 10.0, "0.0");
             CustomUIWindow dialog = null;
             void Apply()
             {
+                Refresh();
+                if (!Automatic) { dialog?.Close(); return; }
                 string text = value.Trim().TrimEnd('%', '％').Trim();
                 if (!double.TryParse(text, NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign,
                     CultureInfo.InvariantCulture, out double parsed) || double.IsNaN(parsed) || double.IsInfinity(parsed)
@@ -159,6 +219,7 @@ namespace ProbablyStolenMixer
                 .AddButton(L10n.Text("apply"), Apply)
                 .AddButton(L10n.Text("cancel"), () => dialog?.Close())
                 .Show();
+            percentDialog = dialog;
         }
 
         private void ChangePercent(int delta)
@@ -169,6 +230,7 @@ namespace ProbablyStolenMixer
 
         private void SelectLiquid(int index)
         {
+            if (!Automatic || !DetectorAccess.HasScanner()) return;
             if (index < 0 || index >= componentChoices.Count) return;
             machine.ModifyTag(LiquidTag, s => s.Enable().SetString(componentChoices[index].identifier));
             Refresh();
@@ -204,8 +266,32 @@ namespace ProbablyStolenMixer
 
         private void Refresh()
         {
+            if (machine == null) return;
+            bool hadDetector = detectorAvailable;
+            detectorAvailable = DetectorAccess.HasScanner();
+            if (!detectorAvailable)
+            {
+                if (machine.IsTag(AutomaticModeTag) && machine.GetTagReadonly(AutomaticModeTag).GetBool())
+                    machine.ModifyTag(AutomaticModeTag, state => state.Enable().SetBool(false));
+                if (hadDetector) { percentDialog?.Close(); percentDialog = null; Status("detector_required"); }
+                componentChoices.Clear();
+                componentDropdown.SetOptions(new List<string>(), 0);
+                Text(substance, "");
+                Text(percentage, "");
+                // Clear any prior diagnostic result rather than exposing stale analysis.
+                if (statusKey == "mix_complete" || statusKey == "percent_set") Status("initial_status");
+            }
+            bool automatic = Automatic;
+            if (!automatic && (statusKey == "mix_complete" || statusKey == "percent_set")) Status("initial_status");
+            automaticControls.handler.gameObject.SetActive(automatic);
+            manualControls.handler.gameObject.SetActive(!automatic);
+            Text(modeLabel, L10n.Text(automatic ? "mode_auto" : "mode_manual"));
+            modeButton.SetText(L10n.Text(automatic ? "switch_manual" : "switch_auto"));
+            if (detectorAvailable) modeButton.Enable(); else modeButton.Disable();
+            Text(detectorHint, L10n.Text(detectorAvailable ? "detector_present" : "detector_required"));
+            Text(doseLabel, L10n.Text("dose_label", Number(Dose / 1000.0)));
+            controls.Validate();
             int index = SelectedIndex;
-            if (index < 0 || machine == null) return;
             string sprite = MixerSprite.Key(target.childItem != null, source.childItem != null);
             if (machine.spritePath != sprite)
             {
@@ -214,13 +300,23 @@ namespace ProbablyStolenMixer
                 machine.SetSpriteQuick(ModEntry.Id, sprite);
             }
             foreach (var update in refreshLabels) update();
-            RefreshComponents();
+            if (automatic) RefreshComponents();
             Text(metering, L10n.Text("metering", ModuleCount, Number(Resolution / 1000.0)));
             Text(moduleHint, L10n.Text("module_hint"));
             machine.name = L10n.Text("item_name");
             machine.shortDescription = L10n.Text("item_description");
             machine.flavorText = L10n.Text("item_flavor");
             Text(status, L10n.Text(statusKey, statusArgs));
+            if (!automatic)
+            {
+                Text(targetInfo, ManualBottleInfo(L10n.Text("target_label"), target.childItem));
+                Text(sourceInfo, ManualBottleInfo(L10n.Text("source_label"), source.childItem));
+                if (TryManualPlan(out int dose, out string failure))
+                    Text(preview, L10n.Text("manual_preview", Number(dose / 1000.0)));
+                else Text(preview, failure);
+                return;
+            }
+            if (index < 0) return;
             Liquid liquid = Liquid.Liquids[index];
             Text(substance, L10n.Text("component_label", L10n.LiquidName(liquid)));
             Text(percentage, L10n.Text("percent_label", Number(Percent / 10.0, "0.0")));
@@ -231,9 +327,40 @@ namespace ProbablyStolenMixer
             else Text(preview, reason);
         }
 
+        private static string ManualBottleInfo(string label, GameItem bottle) => bottle == null
+            ? L10n.Text("bottle_missing", label)
+            : L10n.Text("bottle_volume", label, Number(WaterHelper.GetTotalVolume(bottle) / 1000.0));
+
+        private bool TryManualPlan(out int amount, out string reason)
+        {
+            amount = 0; reason = L10n.Text("missing_bottles");
+            GameItem t = target.childItem, s = source.childItem;
+            if (t == null || s == null) return false;
+            if (!AcceptBottle(t) || !AcceptBottle(s) || ReferenceEquals(t, s))
+            { reason = L10n.Text("unsupported_bottle"); return false; }
+            var plan = ManualDosePlanner.Plan(WaterHelper.GetTotalVolume(t), WaterHelper.GetTotalCapacity(t),
+                WaterHelper.GetTotalVolume(s), Dose, ModuleCount);
+            if (!plan.Success)
+            {
+                switch (plan.Failure)
+                {
+                    case ManualDoseFailure.EmptySource: reason = L10n.Text("empty_source"); break;
+                    case ManualDoseFailure.BelowResolution: reason = L10n.Text("dose_too_small"); break;
+                    case ManualDoseFailure.InsufficientSource: reason = L10n.Text("insufficient_source"); break;
+                    case ManualDoseFailure.InsufficientCapacity: reason = L10n.Text("insufficient_capacity"); break;
+                    default: reason = L10n.Text("dose_invalid"); break;
+                }
+                return false;
+            }
+            amount = plan.Amount;
+            return true;
+        }
+
         private bool TryPlan(out int amount, out double fraction, out string reason)
         {
-            amount = 0; fraction = 0; reason = L10n.Text("missing_bottles");
+            amount = 0; fraction = 0; reason = L10n.Text("detector_required");
+            if (!Automatic || !DetectorAccess.HasScanner()) return false;
+            reason = L10n.Text("missing_bottles");
             GameItem t = target.childItem, s = source.childItem;
             int index = SelectedIndex;
             if (t == null || index < 0) return false;
@@ -258,10 +385,19 @@ namespace ProbablyStolenMixer
 
         private void Mix()
         {
+            Refresh();
             if (!GeneralHelper.IsItemOwned(machine)) { Status("buy_first"); return; }
-            if (!TryPlan(out int amount, out _, out string reason)) { Status("operation_failed"); return; }
-            if (amount == 0) { Status("noop_status"); return; }
+            bool automatic = Automatic;
+            int amount;
+            string reason;
+            if (automatic)
+            {
+                if (!TryPlan(out amount, out _, out reason)) { Status("operation_failed"); return; }
+                if (amount == 0) { Status("noop_status"); return; }
+            }
+            else if (!TryManualPlan(out amount, out reason)) { Status("operation_failed"); return; }
             GameItem t = target.childItem, s = source.childItem;
+            bool wasEmpty = WaterHelper.IsEmpty(t);
             int[] beforeTarget = WaterHelper.GetLiquidParts(t);
             int[] beforeSource = WaterHelper.GetLiquidParts(s);
             int[] moved = WaterHelper.SplitProportionally(beforeSource, amount);
@@ -274,7 +410,7 @@ namespace ProbablyStolenMixer
                 t.ModifyTag(tag, state => state.Enable().SetInt(newTarget), skipValidate: true);
                 s.ModifyTag(tag, state => state.Enable().SetInt(newSource), skipValidate: true);
             }
-            WaterFeatureHelper.OnLiquidContainerPourInto(t, s, false);
+            WaterFeatureHelper.OnLiquidContainerPourInto(t, s, wasEmpty);
             WaterFeatureHelper.OnLiquidContainerPourOutOf(s);
             WaterHelper.UpdateContainerGoodType(t);
             WaterHelper.UpdateContainerGoodType(s);
@@ -283,6 +419,8 @@ namespace ProbablyStolenMixer
             t.Validate();
             s.Validate();
             Refresh();
+            if (!automatic || !Automatic)
+            { Status("manual_complete", Number(amount / 1000.0)); return; }
             int total = WaterHelper.GetTotalVolume(t);
             double actual = Amount(t, Liquid.Liquids[SelectedIndex]) * 100.0 / total;
             Status("mix_complete", Number(amount / 1000.0), Number(actual, "0.000"), Deviation(actual / 100, Percent));

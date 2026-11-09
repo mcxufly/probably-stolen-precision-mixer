@@ -46,6 +46,6 @@ namespace ProbablyStolenMixer
         }
 
         private static void Register(ModItemDirectory directory) => directory.Add(ItemId, MixerMachine.Create);
-        private static void Stock(List<GameItem> items) => PlayerStore.Instance.AddDirectSellingItemToTable(ItemId);
+        private static void Stock(List<GameItem> items) => MixerStock.Stock(items);
     }
 }

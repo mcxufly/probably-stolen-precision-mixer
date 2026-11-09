@@ -1,5 +1,5 @@
 item_name,Precision Mixer
-item_description,"Transfers source fluid toward a target percentage. Chemical modules improve metering from 10 mL to 1 µL (up to 4, locked after installation). No battery required."
+item_description,"Manual dosing needs no analyzer; automatic concentration mixing requires an owned chemical scanner. Chemical modules improve dosing from 10 mL to 1 µL. No battery. Dr. Jackson sells at most one per run."
 item_flavor,Every drop in its proper place.
 enter_percent,Enter percentage (%)
 decrease_percent,-0.1%
@@ -9,7 +9,24 @@ start_mix,Mix
 panel_target,Target bottle
 panel_source,Source bottle
 panel_control,Precision mixing
-initial_status,Insert two bottles and choose a component and percentage.
+initial_status,Insert two bottles and choose a mode.
+mode_manual,Mode: dosing only
+mode_auto,Mode: automatic concentration
+switch_manual,Switch to dosing only
+switch_auto,Switch to automatic concentration
+detector_required,Chemical scanner required for automatic mixing. Dosing only is available.
+detector_present,Chemical scanner available. Both modes are unlocked.
+enter_dose,Enter dose (mL)
+dose_title,Manual dose (mL)
+dose_hint,Dose is rounded DOWN to the current module step. No composition analysis.
+dose_invalid,Enter a positive mL amount with up to 3 decimals (max 2147483.647).
+dose_label,Requested dose: {0} mL
+decrease_dose,-1 dose step
+increase_dose,+1 dose step
+dose_too_small,Requested volume is below the dose step. Increase the dose or install modules.
+bottle_volume,{0}: {1} mL (composition not analyzed)
+manual_preview,Will transfer {0} mL. Composition and final concentration are not analyzed.
+manual_complete,Transferred {0} mL. No concentration analysis.
 input_title,Target percentage (%)
 input_hint,Unit: % | Range: 0–100 | Step: 0.1%
 input_placeholder,For example: 30 or 12.5

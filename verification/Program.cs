@@ -109,7 +109,16 @@ class Program
             string source = File.ReadAllText(Path.Combine("src", "MixerMachine.cs"));
             if (source.Contains("mayInventoryAddItemFunc +="))
                 throw new Exception("Module acceptance must not OR-combine the cap predicate");
-
+            foreach (var method in new[] { "TryManualPlan", "ManualBottleInfo" }.Select(name => machine.Methods.Single(m => m.Name == name)))
+            {
+                var calls = method.Body.Instructions.Select(i => i.Operand).OfType<DseCecil.MethodReference>();
+                if (calls.Any(m => m.DeclaringType.Name == "Liquid" || m.DeclaringType.Name == "L10n" && m.Name == "LiquidName"
+                    || m.DeclaringType.Name == "MeteredMixPlanner" || m.Name == "GetLiquidParts"))
+                    throw new Exception("Manual mode must not inspect chemical composition");
+            }
+            if (!mod.MainModule.Types.Any(t => t.Name == "MixerPurchasePatch") || !mod.MainModule.Types.Any(t => t.Name == "MixerBulkPurchasePatch"))
+                throw new Exception("Direct and bulk purchase tracking patches are required");
+            Console.WriteLine("Dual-mode checks passed: manual planning has no chemical analysis calls; direct/bulk purchase hooks present.");
         }
         var scan = ModScanner.Scan(new[] { Path.Combine(folder, "ProbablyStolenMixer.dll") }, allowed, folder, false);
         Console.WriteLine("Scanner: " + scan.MethodsScanned + " methods; capabilities=" + string.Join(",", scan.Capabilities));

@@ -3,8 +3,8 @@
   <ID>xufly_precision_mixer</ID>
   <Name>Precision Mixer / 精密配比机</Name>
   <Author>XuFly</Author>
-  <ModVersion>0.1.9</ModVersion>
-  <Description>Metered mixing toward a target percentage. Chemical modules improve dose resolution from 10mL to 1µL (max 4; locked after installation). No battery needed. Base value 350. GPL-3.0-only; see LICENSE and NOTICE. English / 中文. 化学模组提升实际定量配比精度：10mL至1µL，最多4个，安装后锁定。无需电池，基础价值350。请备份存档，卸载前取出瓶子并处理掉机器。</Description>
+  <ModVersion>0.2.0</ModVersion>
+  <Description>Manual mL dosing; automatic concentration mixing requires an owned chem_scanner. Dr. Jackson: 25% daily stock, one purchase per run. Chemical-module dose upgrades; no battery; base value350. GPL-3.0-only. 仅掺杂手动定量，自动配比需持有化学检测仪。博士每日25%概率上架，每局限购一台。无需电池，化学模组提升计量精度。请备份存档。</Description>
   <GameVersions><Version>0.46D</Version></GameVersions>
   <Prerequisites />
   <Assemblies><Assembly>ProbablyStolenMixer.dll</Assembly></Assemblies>
