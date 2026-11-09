@@ -35,7 +35,7 @@ def main():
         "visibility": "0",
         "title": "Precision Mixer / 精密配比机",
         "description": (ROOT / "publishing/workshop-description.txt").read_text(),
-        "changenote": "v0.1.8: initial public upload; chemical-module metering upgrades, bilingual UI and four container-state sprites.",
+        "changenote": "v0.1.9: adopt GNU GPL v3 only; include LICENSE, NOTICE and corresponding source links. Gameplay unchanged from v0.1.8.",
     }
     TARGET.parent.mkdir(parents=True, exist_ok=True)
     TARGET.write_text('"workshopitem"\n{\n' + ''.join(f'    {quote(k)} {quote(v)}\n' for k, v in values.items()) + '}\n')

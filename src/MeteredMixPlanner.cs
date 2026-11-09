@@ -1,3 +1,7 @@
+// Copyright (C) 2026 XuFly
+// SPDX-License-Identifier: GPL-3.0-only
+// See LICENSE and NOTICE for license terms and warranty disclaimer.
+
 using System;
 
 namespace ProbablyStolenMixer

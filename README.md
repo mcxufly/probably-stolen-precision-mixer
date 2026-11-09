@@ -2,7 +2,15 @@
 
 Source: https://github.com/mcxufly/probably-stolen-precision-mixer · [Releases](https://github.com/mcxufly/probably-stolen-precision-mixer/releases) · [Steam Workshop / 创意工坊](https://steamcommunity.com/sharedfiles/filedetails/?id=3834261506) · [Publishing / 发布说明](publishing/README.md)
 
-《深空当铺：可能是偷的》Mod，版本 0.1.8。按本机 Steam build 26337366 的真实程序集编译。兼容版本填写 Unity `PlayerSettings.bundleVersion` / `Application.version`：`0.46D`；游戏内部显示字符串 `VERSION 100-Rev6` 不用于模组兼容性匹配。
+《深空当铺：可能是偷的》Mod，版本 0.1.9。按本机 Steam build 26337366 的真实程序集编译。兼容版本填写 Unity `PlayerSettings.bundleVersion` / `Application.version`：`0.46D`；游戏内部显示字符串 `VERSION 100-Rev6` 不用于模组兼容性匹配。
+
+## 许可证 / License
+
+Copyright (C) 2026 XuFly。项目的原创源码、脚本、文档、翻译和美术采用 **GNU General Public License v3.0 only**，SPDX 标识为 **`GPL-3.0-only`**。许可证全文见 [LICENSE](LICENSE)，版权、无担保与对应源码说明见 [NOTICE](NOTICE)。游戏、Unity及其他第三方组件保留各自许可，不随安装包提供。
+
+本程序可在 GPL v3 条件下修改、再分发，不提供担保。分发修改版时，请遵守许可证的源码提供、相同许可、保留声明及标注修改等要求。
+
+Corresponding source for this build, including build and installation instructions, is available at [v0.1.9](https://github.com/mcxufly/probably-stolen-precision-mixer/releases/tag/v0.1.9) as `PrecisionMixer-0.1.9-source.zip`, or from [the source tag](https://github.com/mcxufly/probably-stolen-precision-mixer/tree/v0.1.9). This mod is free software under GPL version 3 only and comes without warranty.
 
 ## 安装
 
@@ -100,7 +108,7 @@ Probably Stolen/
 - 中英文各 47 条文案的键名、占位符及源码引用检查通过；本地化检查命令：`python verification/check_localization.py`。
 - 按未发布开发版处理：直接移除电池槽，不保留旧电池回收或旧存储布局兼容。测试过旧版本的存档请先取出旧机器中的物品并重新生成机器，或使用新测试存档。
 - 四种容器贴图的选择与放入/取出状态序列检查通过；图标脚本还校验了所有状态透明轮廓及4×4占格相同。
-- 尚未在运行中的游戏内点击测试：机器 UI 的实际布局、商店获取、读档还原和液体交互需要游戏内验收。
+- 用户已确认v0.1.8的化学模组相关游戏内测试没有问题；本次v0.1.9增加许可证和发布声明，玩法逻辑未改变。其他未逐项确认的场景不视为已完成全面验收。
 
 算法测试：`dotnet run --project tests/MixPlanner.Tests.csproj -c Release`。
 实际游戏 API 检查：`dotnet run --project verification/GameApiChecks.csproj -c Release -- 0.46D`。最后一个参数是从本机 Unity PlayerSettings 读取的产品版本；检查使用游戏自身的版本归一化方法，并验证清单兼容性。

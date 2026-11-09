@@ -3,6 +3,8 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <LangVersion>latest</LangVersion>
     <AssemblyName>ProbablyStolenMixer</AssemblyName>
+    <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
+    <Copyright>Copyright (C) 2026 XuFly</Copyright>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <GameDir Condition="'$(GameDir)' == ''">/data/SteamLibrary/steamapps/common/Probably Stolen</GameDir>
     <ManagedDir>$(GameDir)/Probably Stolen_Data/Managed</ManagedDir>
@@ -18,6 +20,6 @@
     <ItemGroup><ModAssets Include="assets/**/*" /></ItemGroup>
     <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(MSBuildProjectDirectory)/dist/PrecisionMixer" />
     <Copy SourceFiles="@(ModAssets)" DestinationFiles="@(ModAssets->'$(MSBuildProjectDirectory)/dist/PrecisionMixer/%(RecursiveDir)%(Filename)%(Extension)')" />
-    <Copy SourceFiles="$(MSBuildProjectDirectory)/README.md" DestinationFolder="$(MSBuildProjectDirectory)/dist/PrecisionMixer" />
+    <Copy SourceFiles="$(MSBuildProjectDirectory)/README.md;$(MSBuildProjectDirectory)/LICENSE;$(MSBuildProjectDirectory)/NOTICE" DestinationFolder="$(MSBuildProjectDirectory)/dist/PrecisionMixer" />
   </Target>
 </Project>
