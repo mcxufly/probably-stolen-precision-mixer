@@ -14,7 +14,11 @@ This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See LICENSE.
 
-Corresponding source and build/installation instructions for v0.2.1:
+Corresponding source and build/installation instructions for the local v0.2.2 build
+are supplied alongside the installation package as PrecisionMixer-0.2.2-source.zip.
+This local build has not been published.
+
+Previously published v0.2.1 source:
 https://github.com/mcxufly/probably-stolen-precision-mixer/releases/tag/v0.2.1
 Download PrecisionMixer-0.2.1-source.zip from that page.
 Source tag:
@@ -29,5 +33,6 @@ of the game and its supplied assemblies; see README.md.
 （GPL-3.0-only）。许可证全文见 LICENSE。你可以遵照许可证使用、修改及再分发；
 分发修改版时需遵守相应的源码提供、许可和声明保留要求。本程序不提供担保。
 
-对应源码及构建/安装说明可从上述 v0.2.1 发布页免费下载。
+本地 v0.2.2 的对应源码与构建/安装说明随安装包一同提供于
+PrecisionMixer-0.2.2-source.zip；旧 v0.2.1 源码仍可从上述发布页下载。
 游戏本体、Unity及其他第三方组件保留各自许可，不随本包分发。

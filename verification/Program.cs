@@ -106,6 +106,12 @@ class Program
                 throw new Exception("Missing native chemical module installation/locking setup");
             if (references.Any(m => m.DeclaringType.Name == "PowerHelper" || m.Name == "SetupBatterySlot" || m.Name == "PowerPanel"))
                 throw new Exception("Battery or power dependency remains in the mod");
+            int shapeBindings = machine.Methods.Where(m => m.HasBody).Sum(m => m.Body.Instructions
+                .Select(i => i.Operand).OfType<DseCecil.MethodReference>()
+                .Count(call => call.Name == "SetSpriteAndShapeFromMod"));
+            if (shapeBindings != 2)
+                throw new Exception("Expected sprite-derived shape at creation and once again after saved shape restoration");
+            Console.WriteLine("Footprint migration bindings passed: creation and loaded callback both rebuild the sprite-derived shape.");
             string source = File.ReadAllText(Path.Combine("src", "MixerMachine.cs"));
             if (source.Contains("mayInventoryAddItemFunc +="))
                 throw new Exception("Module acceptance must not OR-combine the cap predicate");

@@ -3,7 +3,7 @@
   <ID>xufly_precision_mixer</ID>
   <Name>Precision Mixer / 精密配比机</Name>
   <Author>XuFly</Author>
-  <ModVersion>0.2.1</ModVersion>
+  <ModVersion>0.2.2</ModVersion>
   <Description>Manual mL dosing; automatic concentration mixing requires an owned chem_scanner. Dr. Jackson: 25% daily stock, one purchase per run. Chemical-module dose upgrades; no battery; base value350. GPL-3.0-only. 仅掺杂手动定量，自动配比需持有化学检测仪。博士每日25%概率上架，每局限购一台。无需电池，化学模组提升计量精度。请备份存档。</Description>
   <GameVersions><Version>0.46D</Version></GameVersions>
   <Prerequisites />

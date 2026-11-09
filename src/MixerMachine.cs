@@ -115,7 +115,13 @@ namespace ProbablyStolenMixer
             source.onSlotAddItemEndFunc += (_, __, ___) => Refresh();
             target.onSlotRemoveItemEndFunc += (_, __, ___) => Refresh();
             source.onSlotRemoveItemEndFunc += (_, __, ___) => Refresh();
-            machine.onLoaded += _ => { slider.SetValue(Percent / 10f); Refresh(); };
+            machine.onLoaded += _ =>
+            {
+                // Saves restore the old footprint after the factory runs; rebuild it once on load.
+                machine.SetSpriteAndShapeFromMod(ModEntry.Id, "precision_mixer");
+                slider.SetValue(Percent / 10f);
+                Refresh();
+            };
             machine.onOneSecondItemFunc += (_, __, ___) => Refresh();
             Refresh();
             return machine;
