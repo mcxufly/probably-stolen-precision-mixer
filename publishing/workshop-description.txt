@@ -1,9 +1,17 @@
 [h1]精密配比机 / Precision Mixer[/h1]
 
-无需电池的定量配比机，基础价值350，在杰克逊博士处购买。放入待处理瓶与原料瓶，从下拉框选择目标物质，填写目标百分比，即可预览实际加料量、成品浓度与偏差。
+无需电池的双模式定量配比机，基础价值350。机器占3×3格，使用原生48×48原创像素贴图，随空机、仅待处理瓶、仅原料瓶、双瓶四种状态切换。
+
+[h2]双模式与获取[/h2]
+[list]
+[*]仅掺杂：无需检测仪，直接填写加入量（mL，最多三位小数），按当前计量步长向下取整。允许空的待处理瓶，不分析或显示浓度；预览显示实际加料量。
+[*]自动配比：必须持有原版完整化学检测仪（chem_scanner）。选择目标物质和目标百分比，预览实际加入量、成品浓度及偏差。水质试纸/基础水质扫描器不能替代；失去检测仪会返回仅掺杂模式。
+[*]杰克逊博士每日25%概率上架，每个存档最多成功购买一台；当日进出商店或读档不重抽，买后即使卖掉也不补货。
+[*]机器内有中英文使用说明，其他语言回退英文。
+[/list]
 
 [h2]化学模组升级[/h2]
-最多安装4个原版化学模组，安装后按原版规则锁定。模组提高实际加料分辨率，不限制百分比输入：
+最多安装4个原版化学模组，安装后锁定，提升实际加料分辨率：
 [list]
 [*]0个：10mL
 [*]1个：5mL
@@ -11,35 +19,31 @@
 [*]3个：0.1mL
 [*]4个：0.001mL（1µL）
 [/list]
+自动模式百分比输入步进始终为0.1%。量化计量可能无法正好达到目标，不随机制造误差、虚假杂质或纯度上限。真实转移原料，所有成分按原料比例一起转移；只支持自有普通液体容器，滤水和酒类专用容器暂不支持。图示只表示槽位占用，不显示实时液量/颜色。
 
-[list]
-[*]真实消耗原料，不生成液体或添加虚假杂质，不设置人为纯度上限。
-[*]百分比输入步进0.1%，预览显示实际成品及偏差；量化计量可能无法正好达到目标。
-[*]不随机产生误差，重复点击不能绕过计量步长。
-[*]中英文界面，其他语言回退英文。
-[*]机器占4×4格，图标随两瓶的放入/取出切换。
-[*]只支持自有普通液体容器；滤水和酒类专用容器暂不支持。
-[/list]
+[h2]安装、升级与存档[/h2]
+订阅后，在模组菜单启用并重启；更新后也需重启。请先备份存档。0.2.2把外部占格从4×4缩至3×3，读档时重新计算占格，不改动两瓶和模组的存储节点顺序、容量或标签。首次载入请检查位置、旋转与内容物，再保存重载确认。卸载前取出瓶子并处理掉所有配比机；安装的化学模组锁定在机器中，丢弃机器会失去模组。
 
-[h2]安装与注意事项[/h2]
-订阅后，在游戏模组菜单启用并重启。请先备份存档；卸载前取出瓶子并处理掉所有配比机。安装的化学模组锁定在机器中，丢弃机器会失去模组。
-
-当前版本0.1.9，针对游戏产品版本0.46D（Steam build 26337366）编译。已通过自动化测试和游戏模组扫描器，用户已确认v0.1.8化学模组相关游戏内测试没有问题；本次仅更新许可声明，不代表所有场景均完成全面验收。建议先用测试存档；欢迎反馈问题。
+版本0.2.2；针对产品版本0.46D / Steam build26525552编译。构建、算法、贴图占格、本地化与原生模组扫描通过。用户于2026-11-09明确确认本次更新已测试通过；未声称全部旧存档、UI与旋转摆放边界均逐项验收。
 
 [h2]许可证 / License[/h2]
-Copyright (C) 2026 XuFly。原创代码、脚本、文档、翻译和美术采用 GNU General Public License 第3版，仅此版本（GPL-3.0-only），不提供担保。许可证全文及源码说明随包附带于 LICENSE 和 NOTICE。
+Copyright (C)2026 XuFly。原创代码、脚本、文档、翻译和美术采用GNU General Public License第3版，仅此版本（GPL-3.0-only），不提供担保。许可证及源码说明随包提供于LICENSE和NOTICE。
 
-对应源码及构建/安装说明可免费下载：[url=https://github.com/mcxufly/probably-stolen-precision-mixer/releases/tag/v0.1.9]v0.1.9 发布页[/url]，选择 PrecisionMixer-0.1.9-source.zip。游戏、Unity及其他第三方组件保留各自许可，不随本包提供。
+对应源码、可复现绘图脚本与构建/安装说明：[url=https://github.com/mcxufly/probably-stolen-precision-mixer/releases/tag/v0.2.2]v0.2.2发布页[/url]，选择PrecisionMixer-0.2.2-source.zip。游戏、Unity及第三方组件保留各自许可，不随包提供。
 
 [h2]English[/h2]
-A battery-free metered fluid mixer. Buy it from Dr. Jackson (base value 350). Insert target and source bottles, select a component, and enter a target percentage. The preview shows actual dosing, predicted concentration, and deviation.
+A battery-free dual-mode mixer (base value350) with a full3×3 footprint and four original48px occupancy sprites.
 
-Up to four original chemical modules improve dose resolution: 10mL → 5mL → 1mL → 0.1mL → 1µL. Modules lock after installation. Percentage input remains in 0.1% steps. All fluid is transferred from real source stock; no generated material, artificial impurity, random error, or purity ceiling. Supports English and Chinese, with four container-occupancy sprites.
+Manual mode doses a requested mL amount, rounded down to the installed metering step. It needs no analyzer, accepts an empty target bottle, and does not reveal composition. Automatic percentage mixing requires an owned original chem_scanner, not basic water-testing tools. Losing it returns to manual mode and clears analysis UI. Percentage input stays at0.1% steps; actual dosing resolution improves with up to four locked chemical modules:10mL →5mL →1mL →0.1mL →1µL.
 
-Subscribe, activate in the game's Mods menu, then restart. Back up saves first. Remove bottles and dispose of all mixer machines before uninstalling. Installed modules remain locked in the machine and are lost when it is discarded.
+Dr. Jackson has a stable25% daily stocking chance; only one successful purchase per save. Reloading/reopening the shop does not reroll that day. Selling/discarding the purchased machine does not restock it. Bilingual in-machine help explains the controls.
 
-Version 0.1.9, built against product version 0.46D / Steam build 26337366. Licensed under GNU GPL version 3 only (GPL-3.0-only), without warranty. Copyright (C) 2026 XuFly. LICENSE and NOTICE are included; corresponding source, build scripts, and installation instructions are available as PrecisionMixer-0.1.9-source.zip on the release page linked above. Third-party game/Unity components retain their own licenses.
+Transfers consume real source fluid proportionally, with no generated material, random error, artificial impurity or purity ceiling. Only owned ordinary liquid bottles are supported. Occupancy icons are not live liquid-level or color indicators.
 
-Automated tests and the game's scanner passed. The user confirmed v0.1.8 chemical-module gameplay testing worked; this licensing update does not imply every runtime scenario has been manually verified. Please try a test save first.
+Subscribe, activate, and restart. Back up saves before upgrading. Version0.2.2 shrinks the footprint from4×4 to3×3 and reapplies it on load without changing storage order or contents. Check position, rotation and contents after loading. Remove bottles and dispose of all mixers before uninstalling; installed modules stay locked and are lost with a discarded machine.
+
+Version0.2.2, built against product0.46D / Steam build26525552. Automated tests and the game scanner passed. The user confirmed successful testing of this update on2026-11-09; this does not imply exhaustive coverage of every save/UI/rotation boundary.
+
+GNU GPL version3 only (GPL-3.0-only), without warranty. Copyright (C)2026 XuFly. LICENSE and NOTICE are included. Corresponding source, build instructions and reproducible artwork are in PrecisionMixer-0.2.2-source.zip on the linked release page. Third-party game/Unity components are not redistributed.
 
 Source / 源码: https://github.com/mcxufly/probably-stolen-precision-mixer

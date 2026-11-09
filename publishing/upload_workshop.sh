@@ -15,9 +15,8 @@ if [[ ! -x "${STEAMCMD_BIN}" ]]; then
     exit 1
 fi
 # Never put a password on the command line; SteamCMD will prompt interactively.
-# Account/config caches live under ignored .tools, not in the source repository.
-export HOME="${ROOT}/.tools/steam-home"
-mkdir -p "${HOME}"
+# Use SteamCMD's normal account cache; never change HOME or copy login secrets.
+# If authentication is needed, run this script in your own interactive terminal.
 cd "${ROOT}/.tools/steamcmd"
 printf 'Using SteamCMD: %s\n' "${STEAMCMD_BIN}"
 exec "${STEAMCMD_BIN}" +login "$1" +workshop_build_item "${ROOT}/.tools/steamcmd/workshop.vdf" +quit

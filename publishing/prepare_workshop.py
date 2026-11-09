@@ -29,8 +29,8 @@ def main():
         raise SystemExit("Build the mod before preparing upload.")
     import xml.etree.ElementTree as ET
     version = ET.parse(folder / "manifest.xml").findtext("ModVersion")
-    if version != "0.1.9":
-        raise SystemExit(f"Workshop metadata still describes 0.1.9, not staged {version}; update and review it before publishing.")
+    if version != "0.2.2":
+        raise SystemExit(f"Workshop metadata still describes 0.2.2, not staged {version}; update and review it before publishing.")
     values = {
         "appid": "4348910",
         "publishedfileid": item_id,
@@ -39,7 +39,7 @@ def main():
         "visibility": "0",
         "title": "Precision Mixer / 精密配比机",
         "description": (ROOT / "publishing/workshop-description.txt").read_text(),
-        "changenote": "v0.1.9: adopt GNU GPL v3 only; include LICENSE, NOTICE and corresponding source links. Gameplay unchanged from v0.1.8.",
+        "changenote": "v0.2.2: full 3x3 footprint, original native 48px four-state art, saved-footprint reload handling. Includes manual dosing / chem_scanner-gated automatic mixing and Jackson's 25% daily, one-per-save stock. User confirmed testing passed. GPL-3.0-only; source on GitHub.",
     }
     TARGET.parent.mkdir(parents=True, exist_ok=True)
     TARGET.write_text('"workshopitem"\n{\n' + ''.join(f'    {quote(k)} {quote(v)}\n' for k, v in values.items()) + '}\n')

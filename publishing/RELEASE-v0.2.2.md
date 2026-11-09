@@ -1,4 +1,4 @@
-# 0.2.2 — 3×3 footprint and native-resolution art (local build)
+# 0.2.2 — 3×3 footprint and native-resolution art
 
 ## Changes / 修改
 
@@ -20,8 +20,20 @@
 - Real manifest parser/version normalization and ModScanner pass; no capabilities or hard refusal flags.
 - Both locales:72 matching keys and valid placeholders.
 - Four-state art was visually inspected; deterministic generation checked.
-- No interactive game test of this new footprint, old-save migration or rotated placement has been performed. Existing v0.1.8 chemical-module test confirmation is not treated as acceptance of this new version.
+- On 2026-11-09 the user explicitly confirmed that this 0.2.2 update had been tested successfully. The user did not enumerate every old-save, rotated-placement or UI boundary scenario; this is not a claim of exhaustive coverage. The earlier v0.1.8 chemical-module test confirmation is retained separately.
 
-## Scope / 范围
+## Included since the last public release / 相对上次公开版本
 
-Local development build only. No game-directory installation, Steam upload, GitHub push/release, or release tag was performed for this task. Use the paired installation/source archives; the source includes the reproducible art script and build instructions.
+The last public release was0.1.9; this release also includes the subsequent dual-mode dosing and stock changes:
+
+- Manual mL dosing works without a detector, including into an empty target bottle. Amounts round down to the chemical-module metering step; the preview shows the actual dose.
+- Automatic percentage mixing requires an owned original `chem_scanner` (not water-test paper or a basic water scanner). Losing it returns the machine to manual mode and clears analysis UI.
+- Dr. Jackson stocks the machine with a stable25% daily chance, with one successful purchase per save. The in-machine bilingual help explains the rules.
+
+仅掺杂模式无需检测仪；自动配比必须持有原版完整化学检测仪。博士每日25%稳定概率上架，每存档限购一台；机器内提供中英文说明。
+
+## Upgrade / 升级
+
+Subscribe/update through the existing Workshop item or replace the manual-install `PrecisionMixer` folder, then restart the game. Back up saves first. The machine is smaller but storage-node order and contents are unchanged. Before uninstalling, remove bottles and dispose of all mixers; installed chemical modules remain locked.
+
+This release updates the existing public GitHub repository and Workshop item3834261506; it does not create a duplicate item. Installation and corresponding-source archives include GPL-3.0-only licensing and build instructions.

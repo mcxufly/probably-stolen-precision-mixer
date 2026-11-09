@@ -1,41 +1,40 @@
 # Publishing / 发布
 
-GitHub repository: https://github.com/mcxufly/probably-stolen-precision-mixer
+- Repository: https://github.com/mcxufly/probably-stolen-precision-mixer
+- Release: https://github.com/mcxufly/probably-stolen-precision-mixer/releases/tag/v0.2.2
+- Existing public Workshop item: https://steamcommunity.com/sharedfiles/filedetails/?id=3834261506
 
-GitHub release for the GPL v3 update: https://github.com/mcxufly/probably-stolen-precision-mixer/releases/tag/v0.1.9
+Version0.2.2 adds a full3×3 footprint, original48px four-state art, and footprint restoration on load. It also includes the dual-mode/analyzer gate and Jackson stock changes since the last public release0.1.9. Release notes: `RELEASE-v0.2.2.md`.
 
-The public Workshop item was verified at v0.1.8. Its v0.1.9 license files and description are prepared locally; it still needs a SteamCMD upload using the same item ID.
+## Build and validate
 
-Public Workshop item: https://steamcommunity.com/sharedfiles/filedetails/?id=3834261506
+```sh
+bash build.sh
+python3 verification/check_localization.py
+python3 verification/check_sprites.py
+python3 verification/check_sprites.py dist/PrecisionMixer
+python3 publishing/draw_preview.py
+python3 publishing/prepare_workshop.py
+```
 
-Workshop ID `3834261506` is recorded in `workshop-id.txt`. Fresh checkouts reuse it automatically; a conflicting nonzero ID in the local VDF aborts upload rather than updating the wrong item. Public page, creator, preview, bilingual description and subscribe controls were verified without signing into Steam.
+Run the algorithm and real-game API checks described in the root README. Only `dist/PrecisionMixer` is Workshop content. Do not include game DLLs, reference sprites, decompiled output, development scripts, credentials, archives or artwork source in that folder. Preview artwork is original and its enlarged sprite uses integer nearest-neighbour sampling; keep the file below1MB.
 
-## Steam Workshop / 创意工坊
+## GitHub
 
-The upload is configured as **public** for App ID `4348910`. Login must use a Steam account that owns the game. Do not place passwords, Steam Guard codes, Steam config files, or auth caches in the repository.
+Keep the manifest, documentation, `v0.2.2` tag, release and archive names in sync. Attach `PrecisionMixer-0.2.2.zip` plus `PrecisionMixer-0.2.2-source.zip`; the latter must contain tracked original sources, resources, reproducible art/build scripts, LICENSE and NOTICE. Preserve older tags. Verify the public release status and downloaded archive hashes after upload.
 
-本次上传可见性为**公开**。请使用拥有游戏的 Steam 账号，在你自己的终端输入密码与 Steam Guard；不要把密码或验证码发到聊天里。
+## Steam Workshop
 
-1. Build: `bash build.sh`.
-2. The script prefers `steamcmd` installed on `PATH` (currently `/usr/bin/steamcmd`), or an executable path supplied as `STEAMCMD_BIN`. It falls back to `.tools/steamcmd/steamcmd.sh`. SteamCMD needs 32-bit C/C++ runtime support. Its HOME is isolated under ignored `.tools/steam-home`, so an existing login under your usual home may need to be repeated.
-3. Run in a terminal:
+App ID4348910, visibility public. `workshop-id.txt` records the existing item3834261506. The VDF generator preserves its ID and aborts on a conflicting nonzero ID. Never reset this ID to retry an update.
 
-   ```bash
-   bash publishing/upload_workshop.sh YOUR_STEAM_LOGIN_NAME
-   ```
+```sh
+bash publishing/upload_workshop.sh YOUR_STEAM_LOGIN_NAME
+```
 
-   Replace the placeholder with your Steam **login name**, not your profile display name. The script launches SteamCMD with no password in its arguments. SteamCMD prompts for password/Guard as required.
+The script prefers the user's installed `steamcmd` or `STEAMCMD_BIN`, falling back to the project-local copy. It uses SteamCMD's normal account cache without redefining HOME. A previous cache under `.tools/steam-home` is not automatically copied or reused. Password/Steam Guard must be entered by the user in their own interactive terminal; never send them in chat or put them in command arguments/logs/source. Authentication caches remain outside tracked sources.
 
-4. After successful upload, SteamCMD writes the new `publishedfileid` back to `.tools/steamcmd/workshop.vdf`. **Keep this file**: its ID is required for future updates. The generator preserves it, preventing accidental duplicate items. Do not delete/recreate it to retry an update. Steam login/config files stay under ignored `.tools`.
-5. Open `https://steamcommunity.com/sharedfiles/filedetails/?id=ITEM_ID`. On first upload, accept the Steam Workshop legal agreement if Steam asks. Confirm the item is public, subscribe, enable it in the game Mods menu, and restart.
-6. Report the item URL/ID back to record and verify the release. Do not share login logs containing secrets.
+After upload, verify the public item page, creator, App, preview, bilingual description, subscribe controls and update version. Cached or delayed Workshop content is not proof of a failed upload; check the actual update timestamp and upload result before retrying.
 
-The VDF is generated by `prepare_workshop.py`; source description and preview are tracked here. Only `dist/PrecisionMixer` is uploaded as workshop content; development scripts, game assemblies, and decompiled inspection files are excluded.
+## Test status
 
-## GitHub Releases
-
-Tag `v0.1.9` includes the GPL-3.0-only license update. Release notes are in `RELEASE-v0.1.9.md`; attach both the install ZIP and the corresponding source ZIP. Both include LICENSE and NOTICE; the source ZIP includes build scripts, resources and artwork sources. Preserve older release tags. The Workshop description points to the exact source release.
-
-## Validation caveat
-
-The build, algorithms, real game fluid-allocation functions, manifest compatibility, and game scanner are checked automatically. The user confirmed the chemical-module gameplay test for v0.1.8. That confirmation does not establish exhaustive manual UI/save-load coverage; the license update does not change gameplay.
+The build, algorithms, real game fluid allocation, manifest compatibility, sprite sampling and native scanner are automatically checked. The user explicitly confirmed successful testing of the0.2.2 update on2026-11-09, in addition to the earlier0.1.8 chemical-module confirmation. This is not a claim that every UI/save-load/rotated-placement boundary was individually tested.
