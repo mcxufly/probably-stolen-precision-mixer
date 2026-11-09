@@ -25,7 +25,7 @@ decrease_dose,-1 dose step
 increase_dose,+1 dose step
 dose_too_small,Requested volume is below the dose step. Increase the dose or install modules.
 bottle_volume,{0}: {1} mL (composition not analyzed)
-manual_preview,Will transfer {0} mL. Composition and final concentration are not analyzed.
+manual_preview,Requested {1} mL / step {2} mL → actual {0} mL. No analysis.
 manual_complete,Transferred {0} mL. No concentration analysis.
 input_title,Target percentage (%)
 input_hint,Unit: % | Range: 0–100 | Step: 0.1%
@@ -62,3 +62,11 @@ insufficient_capacity,Not enough target space. Transfer some fluid out first.
 invalid_bottle,Invalid bottle contents or capacity.
 spawn_machine,Spawn Precision Mixer
 loaded_message,Precision Mixer loaded. Available from Dr. Jackson.
+help_button,Help
+help_title,Precision Mixer: Help
+help_close,Close
+help_manual,Dosing only: enter mL manually. No composition or concentration analysis. Empty target bottles are allowed.
+help_detector,Automatic: requires an owned full chem_scanner. Test strips/aquascan do not qualify. Losing it forces dosing-only mode.
+help_dose,"Doses round DOWN to whole steps: at 10 mL resolution, 23 mL becomes 20 mL. Shortage or insufficient space never causes a partial transfer."
+help_modules,0–4 chemical modules give 10 / 5 / 1 / 0.1 / 0.001 mL steps. Modules lock on installation and are lost when the machine is discarded.
+help_stock,Jackson: one purchase per run; 25% daily stock chance. Revisiting/reloading cannot reroll a day. No restock after sale/disposal. Old purchase history cannot be recovered.

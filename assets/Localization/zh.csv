@@ -25,7 +25,7 @@ decrease_dose,-1计量步长
 increase_dose,+1计量步长
 dose_too_small,设定量小于计量步长，请增大加入量或安装化学模组。
 bottle_volume,{0}：{1}mL（不分析成分）
-manual_preview,将加入{0}mL，不分析成分及成品浓度。
+manual_preview,设定{1}mL，步长{2}mL → 实际加入{0}mL；不分析成分。
 manual_complete,已加入{0}mL，未进行浓度检测。
 input_title,填写目标比例 (%)
 input_hint,单位：%　范围：0–100　精度：0.1%
@@ -62,3 +62,11 @@ insufficient_capacity,待处理瓶空间不足，请先转移一部分液体。
 invalid_bottle,瓶内成分或容量数据无效。
 spawn_machine,生成精密配比机
 loaded_message,精密配比机已加载，可在杰克逊博士处购买。
+help_button,使用说明
+help_title,精密配比机：使用说明
+help_close,关闭
+help_manual,仅掺杂：手动填写加入量mL，不检测成分或浓度，允许空的待处理瓶。
+help_detector,自动配比：须拥有完整化学检测仪chem_scanner；试纸和水质扫描器无效。失去仪器会切回仅掺杂。
+help_dose,加入量按步长向下取整。例如10mL步长时设定23mL，实际加入20mL。缺料或空间不足不会部分转移。
+help_modules,化学模组0至4个对应10 / 5 / 1 / 0.1 / 0.001mL步长；安装后锁定，丢弃机器会失去模组。
+help_stock,博士每局限购一台，每日25%概率上架。同一天重进或读档不重抽；买后卖掉或丢弃不补货。旧版购买历史无法追溯。

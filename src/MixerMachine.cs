@@ -88,7 +88,7 @@ namespace ProbablyStolenMixer
             modeButton = new MachineryButton("", ToggleMode);
             controls = MachineryStack.Vertical(modeLabel, modeButton, detectorHint, metering,
                 automaticControls, manualControls, targetInfo, sourceInfo, preview,
-                MachineryStack.Horizontal(Button("refresh_preview", Refresh), Button("start_mix", Mix)), status);
+                MachineryStack.Horizontal(Button("refresh_preview", Refresh), Button("start_mix", Mix), Button("help_button", OpenHelp)), status);
             var window = MachineHelper.CreateMachineryWindow(true,
                 Panel("panel_target", target, "target"),
                 Panel("panel_source", source, "source"), Panel("panel_control", controls, "control"),
@@ -132,6 +132,20 @@ namespace ProbablyStolenMixer
 
         private bool Automatic => detectorAvailable && machine.IsTag(AutomaticModeTag) && machine.GetTagReadonly(AutomaticModeTag).GetBool();
         private int Dose => machine.IsTag(DoseTag) ? Math.Max(1, machine.GetTagReadonly(DoseTag).GetInt()) : 10000;
+
+        private void OpenHelp()
+        {
+            if (CustomUIManager.Instance == null) return;
+            CustomUIWindow dialog = null;
+            dialog = CustomUIManager.Window(ModEntry.Id + ".help", L10n.Text("help_title"), CustomUIManager.LAYER_PAPER)
+                .UseMachineryStyle().SetSize(600, 520)
+                .AddLabel(L10n.Text("help_manual"))
+                .AddLabel(L10n.Text("help_detector"))
+                .AddLabel(L10n.Text("help_dose"))
+                .AddLabel(L10n.Text("help_modules"))
+                .AddLabel(L10n.Text("help_stock"))
+                .AddButton(L10n.Text("help_close"), () => dialog?.Close()).Show();
+        }
 
         private void ToggleMode()
         {
@@ -312,7 +326,7 @@ namespace ProbablyStolenMixer
                 Text(targetInfo, ManualBottleInfo(L10n.Text("target_label"), target.childItem));
                 Text(sourceInfo, ManualBottleInfo(L10n.Text("source_label"), source.childItem));
                 if (TryManualPlan(out int dose, out string failure))
-                    Text(preview, L10n.Text("manual_preview", Number(dose / 1000.0)));
+                    Text(preview, L10n.Text("manual_preview", Number(dose / 1000.0), Number(Dose / 1000.0), Number(Resolution / 1000.0)));
                 else Text(preview, failure);
                 return;
             }

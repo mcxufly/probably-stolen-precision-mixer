@@ -2,7 +2,7 @@
 
 Source: https://github.com/mcxufly/probably-stolen-precision-mixer · [Releases](https://github.com/mcxufly/probably-stolen-precision-mixer/releases) · [Steam Workshop / 创意工坊](https://steamcommunity.com/sharedfiles/filedetails/?id=3834261506) · [Publishing / 发布说明](publishing/README.md)
 
-《深空当铺：可能是偷的》Mod，版本 0.2.0。按本机 Steam build 26337366 的真实程序集编译。兼容版本填写 Unity `PlayerSettings.bundleVersion` / `Application.version`：`0.46D`；游戏内部显示字符串 `VERSION 100-Rev6` 不用于模组兼容性匹配。
+《深空当铺：可能是偷的》Mod，版本 0.2.1。按本机 Steam build 26337366 的真实程序集编译。兼容版本填写 Unity `PlayerSettings.bundleVersion` / `Application.version`：`0.46D`；游戏内部显示字符串 `VERSION 100-Rev6` 不用于模组兼容性匹配。
 
 ## 许可证 / License
 
@@ -10,7 +10,7 @@ Copyright (C) 2026 XuFly。项目的原创源码、脚本、文档、翻译和�
 
 本程序可在 GPL v3 条件下修改、再分发，不提供担保。分发修改版时，请遵守许可证的源码提供、相同许可、保留声明及标注修改等要求。
 
-Corresponding source for this build, including build and installation instructions, is available at [v0.2.0](https://github.com/mcxufly/probably-stolen-precision-mixer/releases/tag/v0.2.0) as `PrecisionMixer-0.2.0-source.zip`, or from [the source tag](https://github.com/mcxufly/probably-stolen-precision-mixer/tree/v0.2.0). This mod is free software under GPL version 3 only and comes without warranty.
+Corresponding source for this build, including build and installation instructions, is available at [v0.2.1](https://github.com/mcxufly/probably-stolen-precision-mixer/releases/tag/v0.2.1) as `PrecisionMixer-0.2.1-source.zip`, or from [the source tag](https://github.com/mcxufly/probably-stolen-precision-mixer/tree/v0.2.1). This mod is free software under GPL version 3 only and comes without warranty.
 
 ## 安装
 
@@ -43,6 +43,7 @@ Probably Stolen/
 4. 自动配比中输入 `30` 或 `12.5` 表示30%和12.5%，输入步进仍为0.1%。卖掉或失去化学检测仪会在下一次刷新/操作时强制切回仅掺杂，关闭百分比输入窗并清除旧检测结果。
 5. 「化学模组」仓最多安装4个原版化学模组，安装后锁定。两种模式都使用下表计量步长，模组不消耗于每次操作。
 6. 点击「开始配比」执行。仅掺杂显示转移量；自动模式显示成品比例与偏差。缺料或空间不足时拒绝操作。
+7. 点击机器面板「使用说明」查看双模式、检测仪门槛、向下取整示例、模组锁定及博士限购规则；说明提供中英文。
 
 | 化学模组数量 | 加料最小计量单位 |
 |---:|---:|
@@ -106,11 +107,11 @@ Probably Stolen/
 - 24 组纯算法测试通过，包含 10,000 个资源/容量精确边界组合及 225 个混合配比组合。
 - 新增8组计量升级测试，覆盖全部5档、重复操作、取整、容量/缺料边界、500组随机案例和大整数；调用真实游戏 `WaterHelper.SplitProportionally` 验证9,992组混合液在各档的体积守恒、预测一致及升级准确度不倒退。
 - 调用真实游戏 `ModScanner` 检查发布目录：没有额外能力声明需求，没有拒绝项。
-- 中英文各64条文案的键名、占位符及源码引用检查通过；本地化检查命令：`python verification/check_localization.py`。
+- 中英文各72条文案的键名、占位符及源码引用检查通过；本地化检查命令：`python verification/check_localization.py`。
 - 新增仅掺杂容量/缺料/步长/整数上限及博士每日抽取/买后永不补货策略测试。检测仪丢失后的UI清理、实际交易限购与存档还原仍需本次游戏内验收。
 - 按未发布开发版处理：直接移除电池槽，不保留旧电池回收或旧存储布局兼容。测试过旧版本的存档请先取出旧机器中的物品并重新生成机器，或使用新测试存档。
 - 四种容器贴图的选择与放入/取出状态序列检查通过；图标脚本还校验了所有状态透明轮廓及4×4占格相同。
-- 用户已确认v0.1.8的化学模组相关游戏内测试没有问题；本次v0.2.0新增双模式、检测仪门槛与博士限购规则，尚未手动验收这些新流程。
+- 用户已确认v0.1.8的化学模组相关游戏内测试没有问题；本次v0.2.1新增双模式、检测仪门槛与博士限购规则，尚未手动验收这些新流程。
 
 算法测试：`dotnet run --project tests/MixPlanner.Tests.csproj -c Release`。
 实际游戏 API 检查：`dotnet run --project verification/GameApiChecks.csproj -c Release -- 0.46D`。最后一个参数是从本机 Unity PlayerSettings 读取的产品版本；检查使用游戏自身的版本归一化方法，并验证清单兼容性。
